@@ -1,0 +1,3571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GOYU · 清新集</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js">
+    </script>
+    <style>
+        /* ===== 字体 ===== */
+        @font-face {
+            font-family: 'HuiwenMingchao';
+            src: url('fonts/huiwenmingchao.woff2') format('woff2'),
+                url('fonts/huiwenmingchao.woff') format('woff'),
+                url('fonts/huiwenmingchao.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: '楷体', 'KaiTi', serif;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #F0FFFF, #F8C8DC);
+            background-attachment: fixed;
+            color: #2c3e50;
+            padding-top: 70px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body.lightbox-open {
+            overflow: hidden;
+        }
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .app {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+        }
+
+        /* ===== 导航栏 ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px 32px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .navbar-brand {
+            font-family: '仿宋', 'FangSong', serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #87CEEB, #FFC0CB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px rgba(135, 206, 235, 0.3);
+        }
+        .nav-links {
+            display: flex;
+            gap: 16px;
+        }
+        .nav-btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 60px;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: transform 0.25s ease, background 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .nav-btn:hover {
+            transform: scale(1.10);
+            background: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 6px 24px rgba(135, 206, 235, 0.25);
+        }
+        .nav-btn.active {
+            background: rgba(135, 206, 235, 0.35);
+            border-color: #87CEEB;
+            box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
+        }
+
+        /* ===== 主视觉 ===== */
+        .hero {
+            text-align: center;
+            padding: 40px 20px 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 48px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(135, 206, 235, 0.10);
+        }
+        .hero h1 {
+            font-family: 'Great Vibes', 'Brush Script MT', cursive;
+            font-size: 2.4rem;
+            font-weight: normal;
+            background: linear-gradient(135deg, #87CEEB, #FFC0CB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+        .hero p {
+            font-family: 'HuiwenMingchao', '楷体', 'KaiTi', serif;
+            font-style: italic;
+            font-size: 1.3rem;
+            color: #3d5a73;
+            opacity: 0.85;
+            letter-spacing: 2px;
+        }
+
+        /* ===== 视图 ===== */
+        .view {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+
+        /* ===== 卡片 ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 32px;
+            margin: 30px 0 40px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 20px 20px 24px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.25s ease, box-shadow 0.3s, border-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(135, 206, 235, 0.18);
+        }
+        .card.editing {
+            border-color: #87CEEB;
+            box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.3), 0 8px 32px rgba(135, 206, 235, 0.15);
+            transform: translateY(-4px);
+            cursor: default;
+        }
+        .card-cover {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            background: rgba(200, 220, 235, 0.3);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+        .card-cover[src=""] {
+            opacity: 0.4;
+        }
+        .card-view {
+            width: 100%;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3b4a;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+        .card-desc {
+            font-size: 1rem;
+            color: #3d5a73;
+            opacity: 0.8;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+        .card-edit {
+            width: 100%;
+            display: none;
+        }
+        .card.editing .card-view {
+            display: none;
+        }
+        .card.editing .card-edit {
+            display: block;
+        }
+        .card-title-input,
+        .card-desc-input {
+            width: 100%;
+            padding: 8px 14px;
+            border: 2px solid rgba(135, 206, 235, 0.4);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1rem;
+            color: #1e3b4a;
+            outline: none;
+            transition: border-color 0.3s, background 0.3s;
+            margin-bottom: 10px;
+        }
+        .card-title-input:focus,
+        .card-desc-input:focus {
+            border-color: #87CEEB;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .card-title-input {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .card-desc-input {
+            font-size: 0.95rem;
+            min-height: 60px;
+            resize: vertical;
+        }
+        .card-edit-cover {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            border: 1px dashed rgba(135, 206, 235, 0.3);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .card-edit-cover-preview {
+            width: 72px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+            background: rgba(200, 220, 235, 0.3);
+        }
+        .card-edit-cover-btn {
+            padding: 6px 18px;
+            border: none;
+            border-radius: 30px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            background: rgba(135, 206, 235, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #1e3b4a;
+            display: inline-block;
+        }
+        .card-edit-cover-btn:hover {
+            transform: scale(1.05);
+            background: rgba(135, 206, 235, 0.5);
+        }
+        .card-edit-cover-btn input[type="file"] {
+            display: none;
+        }
+        .card-edit-cover-hint {
+            font-size: 0.8rem;
+            color: #5a7a8a;
+            opacity: 0.7;
+        }
+        .card-edit-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+        .card-edit-btn-sm {
+            padding: 4px 18px;
+            border: none;
+            border-radius: 30px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(4px);
+            color: #1e3b4a;
+        }
+        .card-edit-btn-sm:hover {
+            transform: scale(1.06);
+            background: rgba(255, 255, 255, 0.55);
+        }
+        .card-edit-btn-sm.save-sm {
+            background: rgba(135, 206, 235, 0.35);
+            border-color: #87CEEB;
+        }
+        .card-edit-btn-sm.save-sm:hover {
+            background: rgba(135, 206, 235, 0.55);
+        }
+        .card-edit-btn-sm.cancel-sm {
+            background: rgba(200, 200, 200, 0.2);
+            border-color: #bbb;
+        }
+        .card-edit-btn-sm.cancel-sm:hover {
+            background: rgba(200, 200, 200, 0.4);
+        }
+        .card-edit-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: #1e3b4a;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            z-index: 5;
+            opacity: 0.7;
+        }
+        .card-edit-toggle:hover {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 4px 16px rgba(135, 206, 235, 0.2);
+            opacity: 1;
+        }
+        .card.editing .card-edit-toggle {
+            display: none;
+        }
+        .empty-hint {
+            grid-column: 1 / -1;
+            padding: 60px 20px;
+            text-align: center;
+            color: #5a7a8a;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 48px;
+            backdrop-filter: blur(4px);
+            border: 1px dashed rgba(135, 206, 235, 0.3);
+        }
+
+        /* ===== 详情视图 ===== */
+        .detail-back-wrap {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .detail-back-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.1rem;
+            color: #1e3b4a;
+            cursor: pointer;
+            transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            white-space: nowrap;
+        }
+        .detail-back-btn:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 6px 20px rgba(135, 206, 235, 0.2);
+        }
+        .detail-title {
+            font-size: 2.0rem;
+            font-weight: bold;
+            color: #1e3b4a;
+            text-shadow: 0 4px 16px rgba(135, 206, 235, 0.35), 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            word-break: break-word;
+            transition: all 0.2s;
+        }
+        .detail-title-input {
+            font-size: 2.0rem;
+            font-weight: bold;
+            color: #1e3b4a;
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid rgba(135, 206, 235, 0.4);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            font-family: '楷体', 'KaiTi', serif;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 20px;
+        }
+        .detail-title-input:focus {
+            border-color: #87CEEB;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        .detail-body {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 32px;
+            padding: 28px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            min-height: 200px;
+            position: relative;
+        }
+        .detail-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: #1e3b4a;
+            margin-bottom: 20px;
+        }
+        .detail-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid rgba(135, 206, 235, 0.4);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: #1e3b4a;
+            outline: none;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        .detail-textarea:focus {
+            border-color: #87CEEB;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .detail-image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .detail-image-grid img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .detail-image-grid img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 28px rgba(135, 206, 235, 0.2);
+        }
+        .detail-image-single {
+            max-width: 100%;
+            max-height: 480px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 8px 0;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .detail-image-single:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 40px rgba(135, 206, 235, 0.15);
+        }
+        .detail-empty {
+            color: #5a7a8a;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 1.2rem;
+        }
+
+        /* ★★★ 图片管理器 ★★★ */
+        .image-manager {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px solid rgba(135, 206, 235, 0.2);
+        }
+        .image-manager-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1e3b4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .image-manager-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+            min-height: 60px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            border: 1px dashed rgba(135, 206, 235, 0.2);
+        }
+        .image-manager-item {
+            position: relative;
+            width: 100px;
+            height: 75px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+            background: rgba(200, 220, 235, 0.3);
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: grab;
+        }
+        .image-manager-item:hover {
+            border-color: #87CEEB;
+            transform: scale(1.02);
+        }
+        .image-manager-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-manager-item .img-index {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 0 8px;
+            border-radius: 12px;
+            font-family: '楷体', serif;
+            backdrop-filter: blur(4px);
+        }
+        .image-manager-item .img-del {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(200, 50, 50, 0.8);
+            color: #fff;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: '楷体', serif;
+        }
+        .image-manager-item .img-del:hover {
+            transform: scale(1.15);
+            background: rgba(220, 30, 30, 0.95);
+        }
+        .image-manager-item .img-move-up,
+        .image-manager-item .img-move-down {
+            position: absolute;
+            bottom: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: '楷体', serif;
+            backdrop-filter: blur(4px);
+        }
+        .image-manager-item .img-move-up:hover,
+        .image-manager-item .img-move-down:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+        .image-manager-item .img-move-up {
+            left: 4px;
+        }
+        .image-manager-item .img-move-down {
+            right: 4px;
+        }
+        .image-manager-upload {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 30px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            background: rgba(135, 206, 235, 0.3);
+            border: 1px solid rgba(135, 206, 235, 0.3);
+            color: #1e3b4a;
+        }
+        .image-manager-upload:hover {
+            transform: scale(1.05);
+            background: rgba(135, 206, 235, 0.5);
+        }
+        .image-manager-upload input[type="file"] {
+            display: none;
+        }
+
+        .detail-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
+        }
+        .detail-action-btn {
+            padding: 8px 28px;
+            border: none;
+            border-radius: 40px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.0rem;
+            cursor: pointer;
+            transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(4px);
+            color: #1e3b4a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        .detail-action-btn:hover {
+            transform: scale(1.06);
+            background: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 6px 20px rgba(135, 206, 235, 0.2);
+        }
+        .detail-action-btn.edit-btn {
+            background: rgba(135, 206, 235, 0.3);
+            border-color: #87CEEB;
+        }
+        .detail-action-btn.edit-btn:hover {
+            background: rgba(135, 206, 235, 0.5);
+        }
+        .detail-action-btn.save-btn {
+            background: rgba(255, 160, 180, 0.35);
+            border-color: #FFC0CB;
+        }
+        .detail-action-btn.save-btn:hover {
+            background: rgba(255, 160, 180, 0.55);
+        }
+        .detail-action-btn.cancel-edit-btn {
+            background: rgba(200, 200, 200, 0.25);
+            border-color: #aaa;
+        }
+        .detail-action-btn.cancel-edit-btn:hover {
+            background: rgba(200, 200, 200, 0.45);
+        }
+        .detail-action-btn.preview-btn {
+            background: rgba(200, 230, 200, 0.3);
+            border-color: rgba(100, 200, 100, 0.4);
+        }
+        .detail-action-btn.preview-btn:hover {
+            background: rgba(200, 230, 200, 0.5);
+        }
+
+        /* ===== 预览模态框 ===== */
+        .preview-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 250;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .preview-overlay.active {
+            display: flex;
+        }
+        .preview-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 48px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 36px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        .preview-close {
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #5a7a8a;
+            transition: transform 0.2s;
+            background: none;
+            border: none;
+            font-family: '楷体', serif;
+        }
+        .preview-close:hover {
+            transform: scale(1.2);
+        }
+        .preview-title {
+            font-size: 2.0rem;
+            font-weight: bold;
+            color: #1e3b4a;
+            text-shadow: 0 4px 16px rgba(135, 206, 235, 0.35), 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+        .preview-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: #1e3b4a;
+            margin-bottom: 20px;
+        }
+        .preview-images {
+            margin-top: 12px;
+        }
+        .preview-images img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 20px;
+            margin: 6px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .preview-empty {
+            color: #5a7a8a;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* ===== ★★★ Lightbox（含标注） ★★★ ===== */
+        .lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 500;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .lightbox-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .lightbox-overlay .lb-close {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            font-size: 2.6rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: transform 0.25s, color 0.25s;
+            background: none;
+            border: none;
+            font-family: '楷体', serif;
+            z-index: 20;
+            line-height: 1;
+        }
+        .lightbox-overlay .lb-close:hover {
+            transform: scale(1.2) rotate(90deg);
+            color: #fff;
+        }
+        .lb-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.0rem;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            letter-spacing: 1px;
+        }
+        .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.25s, opacity 0.25s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .lb-nav:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-50%) scale(1.08);
+            color: #fff;
+        }
+        .lb-nav.lb-prev {
+            left: 24px;
+        }
+        .lb-nav.lb-next {
+            right: 24px;
+        }
+        .lb-nav.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .lb-image-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .lb-image-container .lb-img-wrapper {
+            position: relative;
+            max-width: 95%;
+            max-height: 85vh;
+            border-radius: 16px;
+            overflow: visible;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        .lb-image-container .lb-img-wrapper img {
+            display: block;
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 16px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        /* ★★★ 标注层 ★★★ */
+        .lb-annotation-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .lb-annotation-layer.lb-anno-editable {
+            pointer-events: auto;
+        }
+        /* ★★★ 单个标注元素 ★★★ */
+        .lb-annotation {
+            position: absolute;
+            pointer-events: auto;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.1s;
+            min-width: 20px;
+            min-height: 20px;
+            /* transform 将由 JS 直接控制 */
+        }
+        .lb-annotation:hover {
+            z-index: 5;
+        }
+        .lb-annotation .anno-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .lb-annotation:hover .anno-dot {
+            transform: translate(-50%, -50%) scale(1.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .lb-annotation .anno-label {
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .lb-annotation:hover .anno-label {
+            opacity: 1;
+        }
+        .lb-annotation .anno-label.show {
+            opacity: 1;
+        }
+        .lb-annotation.editing .anno-dot {
+            transform: translate(-50%, -50%) scale(1.3);
+            border-color: #FFD93D;
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.4);
+        }
+        .lb-annotation .anno-edit-actions {
+            position: absolute;
+            top: -12px;
+            right: -32px;
+            display: none;
+            gap: 4px;
+            pointer-events: auto;
+        }
+        .lb-annotation.editing .anno-edit-actions {
+            display: flex;
+        }
+        .lb-annotation .anno-edit-actions button {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: '楷体', serif;
+        }
+        .lb-annotation .anno-edit-actions .anno-del-btn {
+            background: rgba(220, 50, 50, 0.85);
+            color: #fff;
+        }
+        .lb-annotation .anno-edit-actions .anno-del-btn:hover {
+            transform: scale(1.15);
+            background: rgba(255, 30, 30, 0.95);
+        }
+        .lb-annotation .anno-edit-actions .anno-edit-btn {
+            background: rgba(50, 150, 220, 0.85);
+            color: #fff;
+        }
+        .lb-annotation .anno-edit-actions .anno-edit-btn:hover {
+            transform: scale(1.15);
+            background: rgba(50, 150, 220, 0.95);
+        }
+
+        /* ★★★ 缩放 / 旋转 手柄 ★★★ */
+        .anno-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #87CEEB;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+            z-index: 10;
+            transition: transform 0.15s;
+            display: none;
+        }
+        .lb-annotation.editing .anno-handle {
+            display: block;
+        }
+        .anno-handle:hover {
+            transform: scale(1.2);
+        }
+        .anno-handle.anno-scale {
+            bottom: -8px;
+            right: -8px;
+            cursor: nwse-resize;
+        }
+        .anno-handle.anno-rotate {
+            top: -8px;
+            left: 50%;
+            margin-left: -8px;
+            cursor: grab;
+            background: rgba(255, 215, 0, 0.9);
+            border-color: #FFD93D;
+        }
+        .anno-handle.anno-rotate::after {
+            content: '';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 14px;
+            background: rgba(255, 215, 0, 0.5);
+        }
+
+        /* ===== 标注输入模态框 ===== */
+        .anno-input-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 600;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .anno-input-overlay.active {
+            display: flex;
+        }
+        .anno-input-box {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 36px;
+            padding: 32px 36px;
+            max-width: 440px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+            animation: annoIn 0.25s ease;
+        }
+        @keyframes annoIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .anno-input-box h3 {
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.3rem;
+            color: #1e3b4a;
+            margin-bottom: 14px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .anno-input-box textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(135, 206, 235, 0.3);
+            border-radius: 20px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.05rem;
+            background: rgba(255, 255, 255, 0.6);
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            color: #1e3b4a;
+        }
+        .anno-input-box textarea:focus {
+            border-color: #87CEEB;
+            box-shadow: 0 0 0 4px rgba(135, 206, 235, 0.15);
+        }
+        .anno-input-box textarea::placeholder {
+            color: #a0b8c8;
+        }
+        .anno-input-box .anno-input-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+            margin-top: 18px;
+        }
+        .anno-input-box .anno-input-actions button {
+            padding: 8px 30px;
+            border: none;
+            border-radius: 40px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.0rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.25s, box-shadow 0.25s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .anno-input-box .anno-input-actions .anno-input-cancel {
+            background: rgba(200, 200, 200, 0.25);
+            color: #3d5a73;
+        }
+        .anno-input-box .anno-input-actions .anno-input-cancel:hover {
+            background: rgba(200, 200, 200, 0.45);
+            transform: scale(1.04);
+        }
+        .anno-input-box .anno-input-actions .anno-input-confirm {
+            background: rgba(135, 206, 235, 0.35);
+            color: #1e3b4a;
+            border-color: rgba(135, 206, 235, 0.3);
+        }
+        .anno-input-box .anno-input-actions .anno-input-confirm:hover {
+            background: rgba(135, 206, 235, 0.55);
+            transform: scale(1.04);
+            box-shadow: 0 4px 20px rgba(135, 206, 235, 0.2);
+        }
+
+        .lb-toolbar {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 15;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .lb-toolbar button {
+            padding: 4px 16px;
+            border: none;
+            border-radius: 30px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s, color 0.2s;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .lb-toolbar button:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .lb-toolbar button.active-tool {
+            background: rgba(135, 206, 235, 0.35);
+            color: #fff;
+            border-color: rgba(135, 206, 235, 0.3);
+        }
+        .lb-toolbar button.active-tool:hover {
+            background: rgba(135, 206, 235, 0.5);
+        }
+
+        /* ===== 添加按钮 ===== */
+        .add-btn-wrap {
+            text-align: center;
+            margin: 20px 0 30px;
+        }
+        .modal-btn {
+            padding: 10px 32px;
+            border: none;
+            border-radius: 60px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(135, 206, 235, 0.35);
+            color: #1e3b4a;
+        }
+        .modal-btn:hover {
+            transform: scale(1.05);
+            background: rgba(135, 206, 235, 0.55);
+            box-shadow: 0 6px 20px rgba(135, 206, 235, 0.25);
+        }
+        .modal-btn.primary {
+            background: rgba(255, 160, 180, 0.4);
+        }
+        .modal-btn.primary:hover {
+            background: rgba(255, 160, 180, 0.6);
+        }
+
+        /* ===== 主模态框 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 48px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 36px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #5a7a8a;
+            transition: transform 0.2s;
+            background: none;
+            border: none;
+            font-family: '楷体', serif;
+        }
+        .modal-close:hover {
+            transform: scale(1.2);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e3b4a;
+            background: linear-gradient(135deg, #87CEEB, #FFC0CB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .modal-badge {
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-size: 1.0rem;
+            font-weight: bold;
+            font-family: '楷体', 'KaiTi', serif;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #1e3b4a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .modal-badge.text-badge {
+            background: rgba(135, 206, 235, 0.25);
+            border-color: #87CEEB;
+        }
+        .modal-badge.comic-badge {
+            background: rgba(255, 160, 180, 0.25);
+            border-color: #FFC0CB;
+        }
+        .modal-label {
+            display: block;
+            margin: 16px 0 6px;
+            font-size: 1.1rem;
+            color: #1e3b4a;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1rem;
+            color: #1e3b4a;
+            outline: 2px solid transparent;
+            transition: outline 0.2s, background 0.3s;
+        }
+        .modal-input:focus {
+            outline: 2px solid #87CEEB;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        .modal-file-input {
+            padding: 10px 0;
+        }
+        .modal-preview {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .modal-preview-text {
+            white-space: pre-wrap;
+            font-family: '楷体', serif;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 8px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .modal-preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 16px;
+            margin: 8px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        /* ===== 裁剪模态框 ===== */
+        .crop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 300;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .crop-overlay.active {
+            display: flex;
+        }
+        .crop-box {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 48px;
+            max-width: 750px;
+            width: 100%;
+            max-height: 92vh;
+            padding: 28px 32px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .crop-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+        .crop-header h2 {
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.4rem;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            font-weight: normal;
+            letter-spacing: 2px;
+        }
+        .crop-header .crop-close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: transform 0.2s, color 0.2s;
+            background: none;
+            border: none;
+            font-family: '楷体', serif;
+        }
+        .crop-header .crop-close:hover {
+            transform: scale(1.2);
+            color: #fff;
+        }
+        .crop-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #1a2a33;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            flex-shrink: 0;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: grab;
+        }
+        .crop-container:active {
+            cursor: grabbing;
+        }
+        .crop-container img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: none;
+            max-height: none;
+            pointer-events: none;
+            will-change: transform;
+        }
+        .crop-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .crop-mask::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+            border-radius: 24px;
+        }
+        .crop-guide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+        }
+        .crop-guide::before,
+        .crop-guide::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .crop-guide::before {
+            top: 33.33%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+        .crop-guide::after {
+            left: 33.33%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            border-left: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+        .crop-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 4px 4px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .crop-controls .zoom-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.9rem;
+            min-width: 52px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .crop-controls input[type="range"] {
+            flex: 1;
+            min-width: 120px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+            outline: none;
+            transition: background 0.2s;
+        }
+        .crop-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(135, 206, 235, 0.7);
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+            transition: background 0.2s, transform 0.15s;
+        }
+        .crop-controls input[type="range"]::-webkit-slider-thumb:hover {
+            background: rgba(135, 206, 235, 0.9);
+            transform: scale(1.1);
+        }
+        .crop-controls input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(135, 206, 235, 0.7);
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        .crop-controls .zoom-reset {
+            padding: 4px 16px;
+            border: none;
+            border-radius: 30px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.7);
+            transition: background 0.25s, color 0.25s, transform 0.2s;
+        }
+        .crop-controls .zoom-reset:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .crop-info {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.85rem;
+            padding: 6px 0 2px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        .crop-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 14px;
+            margin-top: 12px;
+            flex-shrink: 0;
+        }
+        .crop-btn {
+            padding: 10px 36px;
+            border: none;
+            border-radius: 40px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.0rem;
+            cursor: pointer;
+            transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .crop-btn:hover {
+            transform: scale(1.05);
+        }
+        .crop-btn.cancel-crop {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        .crop-btn.cancel-crop:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+        .crop-btn.confirm-crop {
+            background: rgba(135, 206, 235, 0.3);
+            border-color: rgba(135, 206, 235, 0.35);
+        }
+        .crop-btn.confirm-crop:hover {
+            background: rgba(135, 206, 235, 0.5);
+            box-shadow: 0 6px 24px rgba(135, 206, 235, 0.2);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px 16px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+                white-space: nowrap;
+            }
+            .modal-box {
+                padding: 24px 20px;
+            }
+            .modal-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .detail-title,
+            .detail-title-input,
+            .preview-title {
+                font-size: 1.5rem;
+            }
+            .detail-body {
+                padding: 16px;
+            }
+            .detail-image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .detail-image-grid img {
+                height: 120px;
+            }
+            .detail-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .detail-action-btn {
+                padding: 6px 20px;
+                font-size: 0.95rem;
+            }
+            .card-edit-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+                top: 12px;
+                right: 12px;
+            }
+            .card-edit-cover {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card-edit-cover-preview {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 4/3;
+            }
+            .crop-box {
+                padding: 16px 14px 18px;
+                border-radius: 32px;
+            }
+            .crop-header h2 {
+                font-size: 1.1rem;
+            }
+            .crop-btn {
+                padding: 8px 22px;
+                font-size: 0.9rem;
+            }
+            .crop-controls {
+                gap: 10px;
+            }
+            .crop-controls .zoom-label {
+                min-width: 40px;
+                font-size: 0.8rem;
+            }
+            .preview-box {
+                padding: 24px 20px;
+                border-radius: 32px;
+            }
+            .lightbox-overlay .lb-close {
+                top: 16px;
+                right: 20px;
+                font-size: 2rem;
+            }
+            .lb-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            .lb-nav.lb-prev {
+                left: 8px;
+            }
+            .lb-nav.lb-next {
+                right: 8px;
+            }
+            .lb-counter {
+                font-size: 0.85rem;
+                padding: 4px 16px;
+                bottom: 16px;
+            }
+            .lb-toolbar {
+                top: 80px;
+                padding: 4px 12px;
+                gap: 6px;
+            }
+            .lb-toolbar button {
+                font-size: 0.75rem;
+                padding: 2px 12px;
+            }
+            .image-manager-item {
+                width: 72px;
+                height: 54px;
+            }
+            .image-manager-item .img-move-up,
+            .image-manager-item .img-move-down {
+                width: 18px;
+                height: 18px;
+                font-size: 0.6rem;
+            }
+            .image-manager-item .img-del {
+                width: 18px;
+                height: 18px;
+                font-size: 0.6rem;
+            }
+            .lb-annotation .anno-label {
+                font-size: 0.65rem;
+                padding: 2px 8px;
+                max-width: 120px;
+            }
+            .anno-input-box {
+                padding: 24px 20px;
+                border-radius: 28px;
+            }
+            .anno-input-box h3 {
+                font-size: 1.1rem;
+            }
+            .anno-handle {
+                width: 12px;
+                height: 12px;
+            }
+            .anno-handle.anno-rotate::after {
+                height: 10px;
+                top: -10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <nav class="navbar">
+        <span class="navbar-brand">🌸 GOYU</span>
+        <div class="nav-links">
+            <button class="nav-btn active" data-tab="text">📖 文本</button>
+            <button class="nav-btn" data-tab="comic">🎨 漫本</button>
+        </div>
+    </nav>
+
+    <div class="app">
+        <header class="hero">
+            <h1>Journeys end in lovers meeting</h1>
+            <p>我期待你的未来 · 怎么可能忘得掉</p>
+        </header>
+
+        <!-- ===== 首页 ===== -->
+        <div id="view-home" class="view active">
+            <div id="section-text" class="section active">
+                <div class="card-grid" id="text-grid">
+                    <div class="empty-hint">✨ 还没有文本内容，上传一篇吧</div>
+                </div>
+                <div class="add-btn-wrap">
+                    <button class="modal-btn primary" id="open-text-modal" style="font-size:1.2rem; padding:12px 40px;">＋ 添加文本</button>
+                </div>
+            </div>
+            <div id="section-comic" class="section">
+                <div class="card-grid" id="comic-grid">
+                    <div class="empty-hint">🎨 还没有漫本作品，上传一则吧</div>
+                </div>
+                <div class="add-btn-wrap">
+                    <button class="modal-btn primary" id="open-comic-modal" style="font-size:1.2rem; padding:12px 40px;">＋ 添加漫本</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 详情视图 ===== -->
+        <div id="view-detail" class="view">
+            <div class="detail-back-wrap">
+                <button class="detail-back-btn" id="detail-back-btn">← 返回</button>
+            </div>
+            <div id="detail-title-container"></div>
+            <div class="detail-body" id="detail-body">
+                <div class="detail-empty">加载中...</div>
+            </div>
+            <div class="detail-actions" id="detail-actions">
+                <button class="detail-action-btn edit-btn" id="detail-edit-btn">✎ 修改</button>
+                <button class="detail-action-btn preview-btn" id="detail-preview-btn" style="display:none;">👁 预览</button>
+                <button class="detail-action-btn save-btn" id="detail-save-btn" style="display:none;">✓ 保存</button>
+                <button class="detail-action-btn cancel-edit-btn" id="detail-cancel-btn" style="display:none;">✕ 取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 预览模态框 ===== -->
+    <div class="preview-overlay" id="preview-overlay">
+        <div class="preview-box">
+            <button class="preview-close" id="preview-close-btn">✕</button>
+            <div id="preview-title" class="preview-title">预览标题</div>
+            <div id="preview-text" class="preview-text">预览正文</div>
+            <div id="preview-images" class="preview-images"></div>
+        </div>
+    </div>
+
+    <!-- ===== ★★★ Lightbox ★★★ ===== -->
+    <div class="lightbox-overlay" id="lightbox-overlay">
+        <button class="lb-close" id="lb-close">✕</button>
+        <div class="lb-toolbar" id="lb-toolbar">
+            <button id="lb-anno-toggle" class="active-tool">✏ 标注模式</button>
+        </div>
+        <button class="lb-nav lb-prev" id="lb-prev">‹</button>
+        <button class="lb-nav lb-next" id="lb-next">›</button>
+        <div class="lb-counter" id="lb-counter">1 / 1</div>
+        <div class="lb-image-container" id="lb-container">
+            <div class="lb-img-wrapper" id="lb-img-wrapper">
+                <img id="lb-image" src="" alt="查看图片" />
+                <div class="lb-annotation-layer" id="lb-annotation-layer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ★★★ 标注输入模态框 ★★★ ===== -->
+    <div class="anno-input-overlay" id="anno-input-overlay">
+        <div class="anno-input-box">
+            <h3>✎ 标注文字</h3>
+            <textarea id="anno-input-text" placeholder="在此输入标注内容…"></textarea>
+            <div class="anno-input-actions">
+                <button class="anno-input-cancel" id="anno-input-cancel">取消</button>
+                <button class="anno-input-confirm" id="anno-input-confirm">✓ 确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 主模态框 ===== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" id="modal-close">✕</button>
+            <div class="modal-header">
+                <span class="modal-title" id="modal-title">添加内容</span>
+                <span class="modal-badge" id="modal-badge">📖 文本</span>
+            </div>
+            <label class="modal-label">标题</label>
+            <input class="modal-input" id="modal-title-input" placeholder="输入标题..." />
+            <label class="modal-label">描述</label>
+            <input class="modal-input" id="modal-desc-input" placeholder="输入描述..." />
+            <label class="modal-label">上传文件（支持 .docx / .txt / .md / 图片）</label>
+            <input type="file" class="modal-input modal-file-input" id="modal-file-input" accept=".docx,.txt,.md,.jpg,.jpeg,.png,.gif" />
+            <div class="modal-preview" id="modal-preview">
+                <div style="color:#5a7a8a; text-align:center; padding:20px;">上传文件后，将自动提取文字和图片</div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn" id="modal-cancel">取消</button>
+                <button class="modal-btn primary" id="modal-save">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 裁剪模态框 ===== -->
+    <div class="crop-overlay" id="crop-overlay">
+        <div class="crop-box">
+            <div class="crop-header">
+                <h2>✧ 裁剪封面</h2>
+                <button class="crop-close" id="crop-close-btn">✕</button>
+            </div>
+            <div class="crop-container" id="crop-container">
+                <img id="crop-image" src="" alt="裁剪图片" draggable="false" />
+                <div class="crop-mask"></div>
+                <div class="crop-guide"></div>
+            </div>
+            <div class="crop-controls">
+                <span class="zoom-label" id="zoom-label">100%</span>
+                <input type="range" id="zoom-slider" min="20" max="200" value="100" step="1" />
+                <button class="zoom-reset" id="zoom-reset-btn">⟲ 重置</button>
+            </div>
+            <div class="crop-info">🖱 拖拽移动 · 滚轮缩放 · 4:3 裁剪区域</div>
+            <div class="crop-actions">
+                <button class="crop-btn cancel-crop" id="crop-cancel-btn">取消</button>
+                <button class="crop-btn confirm-crop" id="crop-confirm-btn">✓ 确认裁剪</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            //  粒子系统（保持不变）
+            // ============================================================
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const TYPES = { SNOW: 'snow', SAKURA: 'sakura' };
+
+            function drawSakuraPetal(ctx, radius, rotation) {
+                const segments = 48;
+                const points = [];
+                const angleMax = 75 * Math.PI / 180;
+                const angleMin = -angleMax;
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    const theta = angleMin + t * (angleMax - angleMin);
+                    const cosVal = Math.cos(theta);
+                    let baseR = Math.pow(Math.abs(cosVal), 0.45) * 0.9 + 0.1;
+                    baseR = baseR * (0.95 + 0.05 * Math.cos(theta * 2));
+                    const notchDepth = 0.28;
+                    const notchWidth = 0.30;
+                    const notchFactor = 1 - notchDepth * Math.exp(-Math.pow(theta / notchWidth, 2));
+                    let r = radius * baseR * notchFactor;
+                    const waveAmp = 0.045 * radius * (0.6 + 0.4 * (1 - Math.abs(theta) / angleMax));
+                    const wave = waveAmp * Math.sin(theta * 9 + 0.7 + 0.2 * Math.cos(theta * 3));
+                    r += wave;
+                    r = Math.max(r, 0.02 * radius);
+                    const x = r * Math.sin(theta);
+                    const y = r * Math.cos(theta);
+                    points.push({ x, y });
+                }
+                ctx.save();
+                ctx.rotate(rotation);
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+                ctx.closePath();
+                const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+                grad.addColorStop(0, '#FFF0F5');
+                grad.addColorStop(0.5, '#FFDDE6');
+                grad.addColorStop(0.9, '#FFB7C5');
+                grad.addColorStop(1, '#FFA0B8');
+                ctx.fillStyle = grad;
+                ctx.shadowColor = 'rgba(255, 182, 193, 0.25)';
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(255, 180, 190, 0.15)';
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            class Particle {
+                constructor() {
+                    this.type = Math.random() > 0.5 ? TYPES.SNOW : TYPES.SAKURA;
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height - height;
+                    this.size = this.type === TYPES.SNOW ? 8 + Math.random() * 14 : 14 + Math.random() * 20;
+                    this.speedY = 0.3 + Math.random() * 1.0;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.opacity = 0.65 + Math.random() * 0.35;
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.rotSpeed = (Math.random() - 0.5) * 0.01;
+                    this.wind = (Math.random() - 0.5) * 0.2;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX + Math.sin(this.y * 0.008) * this.wind;
+                    this.rotation += this.rotSpeed;
+                    if (this.y > height + 40) {
+                        this.y = -20 - Math.random() * 60;
+                        this.x = Math.random() * width;
+                        this.speedY = 0.3 + Math.random() * 1.0;
+                        this.speedX = (Math.random() - 0.5) * 0.5;
+                    }
+                    if (this.x < -40) this.x = width + 30;
+                    if (this.x > width + 40) this.x = -30;
+                }
+                draw(ctx) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.globalAlpha = this.opacity;
+                    if (this.type === TYPES.SNOW) {
+                        const r = this.size / 2;
+                        const spikes = 6;
+                        const outerR = r;
+                        const innerR = r * 0.4;
+                        ctx.beginPath();
+                        for (let i = 0; i < spikes * 2; i++) {
+                            const radius = i % 2 === 0 ? outerR : innerR;
+                            const angle = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2;
+                            const x = Math.cos(angle) * radius;
+                            const y = Math.sin(angle) * radius;
+                            if (i === 0) ctx.moveTo(x, y);
+                            else ctx.lineTo(x, y);
+                        }
+                        ctx.closePath();
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                        ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
+                        ctx.shadowBlur = 6;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                        ctx.lineWidth = 1.5;
+                        for (let i = 0; i < spikes; i++) {
+                            const angle = (i / spikes) * Math.PI * 2 - Math.PI / 2;
+                            const tipX = Math.cos(angle) * outerR;
+                            const tipY = Math.sin(angle) * outerR;
+                            const branchLen = outerR * 0.35;
+                            for (let side = -1; side <= 1; side += 2) {
+                                const branchAngle = angle + side * 0.6;
+                                const bx = tipX + Math.cos(branchAngle) * branchLen;
+                                const by = tipY + Math.sin(branchAngle) * branchLen;
+                                ctx.beginPath();
+                                ctx.moveTo(tipX, tipY);
+                                ctx.lineTo(bx, by);
+                                ctx.stroke();
+                            }
+                        }
+                        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, r * 0.12, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        const r = this.size / 2;
+                        for (let i = 0; i < 5; i++) {
+                            const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+                            drawSakuraPetal(ctx, r, angle);
+                        }
+                        ctx.shadowBlur = 0;
+                        for (let i = 0; i < 10; i++) {
+                            const angle = (i / 10) * Math.PI * 2;
+                            const rad = r * 0.15 + Math.random() * r * 0.15;
+                            const cx = Math.cos(angle) * rad;
+                            const cy = Math.sin(angle) * rad;
+                            ctx.beginPath();
+                            ctx.arc(cx, cy, r * 0.04, 0, Math.PI * 2);
+                            ctx.fillStyle = `hsla(45, 80%, 70%, 0.6)`;
+                            ctx.fill();
+                        }
+                    }
+                    ctx.restore();
+                }
+            }
+
+            function initParticles(count = 70) {
+                particles = [];
+                for (let i = 0; i < count; i++) {
+                    const p = new Particle();
+                    p.y = Math.random() * height;
+                    particles.push(p);
+                }
+            }
+            initParticles(70);
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, width, height);
+                for (let p of particles) {
+                    p.update();
+                    p.draw(ctx);
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            window.addEventListener('resize', () => {
+                const target = Math.floor((width * height) / 9000);
+                const newCount = Math.min(110, Math.max(35, target));
+                if (particles.length !== newCount) {
+                    initParticles(newCount);
+                }
+            });
+
+            // ============================================================
+            //  导航与视图切换（保持不变）
+            // ============================================================
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = {
+                text: document.getElementById('section-text'),
+                comic: document.getElementById('section-comic')
+            };
+            const viewHome = document.getElementById('view-home');
+            const viewDetail = document.getElementById('view-detail');
+
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    if (viewDetail.classList.contains('active')) {
+                        viewHome.classList.add('active');
+                        viewDetail.classList.remove('active');
+                        document.body.style.overflow = '';
+                        isDetailEditing = false;
+                        updateDetailActions();
+                        if (lightboxOverlay.classList.contains('active')) closeLightbox();
+                    }
+                    Object.keys(sections).forEach(key => {
+                        sections[key].classList.toggle('active', key === tab);
+                    });
+                });
+            });
+
+            // ============================================================
+            //  详情页核心（保持不变）
+            // ============================================================
+            const detailTitleContainer = document.getElementById('detail-title-container');
+            const detailBody = document.getElementById('detail-body');
+            const editBtn = document.getElementById('detail-edit-btn');
+            const previewBtn = document.getElementById('detail-preview-btn');
+            const saveBtn = document.getElementById('detail-save-btn');
+            const cancelBtn = document.getElementById('detail-cancel-btn');
+
+            let currentDetailItem = null;
+            let currentDetailType = 'text';
+            let currentDetailIndex = -1;
+            let isDetailEditing = false;
+
+            function showHomeView() {
+                viewHome.classList.add('active');
+                viewDetail.classList.remove('active');
+                document.body.style.overflow = '';
+                isDetailEditing = false;
+                updateDetailActions();
+                if (lightboxOverlay.classList.contains('active')) closeLightbox();
+            }
+
+            function showDetailView(type, index) {
+                const items = type === 'text' ? textItems : comicItems;
+                const item = items[index];
+                if (!item) return;
+                currentDetailType = type;
+                currentDetailIndex = index;
+                currentDetailItem = item;
+                isDetailEditing = false;
+                viewHome.classList.remove('active');
+                viewDetail.classList.add('active');
+                document.body.style.overflow = '';
+                renderDetail(item);
+                updateDetailActions();
+            }
+
+            function renderDetail(item) {
+                if (!item) {
+                    detailTitleContainer.innerHTML = `<div class="detail-title">无内容</div>`;
+                    detailBody.innerHTML = `<div class="detail-empty">该条目暂无数据</div>`;
+                    return;
+                }
+                if (isDetailEditing) {
+                    detailTitleContainer.innerHTML =
+                        `<input class="detail-title-input" id="detail-title-edit" value="${escapeHtml(item.title || '无标题')}" />`;
+                } else {
+                    detailTitleContainer.innerHTML =
+                    `<div class="detail-title">${escapeHtml(item.title || '无标题')}</div>`;
+                }
+                let html = '';
+                if (isDetailEditing) {
+                    const textContent = item.fullText || '';
+                    html += `<textarea class="detail-textarea" id="detail-text-edit">${escapeHtml(textContent)}</textarea>`;
+                    html += renderImageManager(item);
+                } else {
+                    if (item.fullText && item.fullText.trim()) {
+                        html += `<div class="detail-text">${escapeHtml(item.fullText)}</div>`;
+                    }
+                    if (item.images && item.images.length > 0) {
+                        if (item.images.length === 1) {
+                            html +=
+                                `<img class="detail-image-single" src="${item.images[0]}" alt="图片" data-img-index="0" />`;
+                        } else {
+                            html += `<div class="detail-image-grid">`;
+                            item.images.forEach((src, idx) => {
+                                html += `<img src="${src}" alt="图片" data-img-index="${idx}" />`;
+                            });
+                            html += `</div>`;
+                        }
+                    }
+                    if (!item.fullText && (!item.images || item.images.length === 0)) {
+                        html = `<div class="detail-empty">该条目暂无文字或图片内容</div>`;
+                    }
+                }
+                detailBody.innerHTML = html;
+            }
+
+            function renderImageManager(item) {
+                const images = item.images || [];
+                if (images.length === 0) {
+                    return `
+                        <div class="image-manager">
+                            <div class="image-manager-title">🖼 图片管理</div>
+                            <div class="image-manager-list">
+                                <div style="color:#5a7a8a; padding:12px; width:100%; text-align:center; font-size:0.9rem;">暂无图片，点击下方添加</div>
+                            </div>
+                            <label class="image-manager-upload">
+                                ＋ 添加图片
+                                <input type="file" accept="image/*" multiple id="detail-add-images" />
+                            </label>
+                        </div>
+                    `;
+                }
+                let listHtml = '';
+                images.forEach((src, idx) => {
+                    listHtml += `
+                        <div class="image-manager-item" data-img-idx="${idx}">
+                            <img src="${src}" alt="图片${idx+1}" />
+                            <span class="img-index">${idx+1}</span>
+                            <button class="img-del" data-img-idx="${idx}" title="删除">✕</button>
+                            ${idx > 0 ? `<button class="img-move-up" data-img-idx="${idx}" title="上移">↑</button>` : ''}
+                            ${idx < images.length - 1 ? `<button class="img-move-down" data-img-idx="${idx}" title="下移">↓</button>` : ''}
+                        </div>
+                    `;
+                });
+                return `
+                    <div class="image-manager">
+                        <div class="image-manager-title">🖼 图片管理（共 ${images.length} 张）</div>
+                        <div class="image-manager-list" id="img-manager-list">
+                            ${listHtml}
+                        </div>
+                        <label class="image-manager-upload">
+                            ＋ 添加图片
+                            <input type="file" accept="image/*" multiple id="detail-add-images" />
+                        </label>
+                    </div>
+                `;
+            }
+
+            // 图片管理器事件（保持不变）
+            document.addEventListener('click', function(e) {
+                const delBtn = e.target.closest('.img-del');
+                if (delBtn) {
+                    const idx = parseInt(delBtn.dataset.imgIdx);
+                    if (!isNaN(idx) && currentDetailItem && currentDetailItem.images) {
+                        currentDetailItem.images.splice(idx, 1);
+                        if (currentDetailItem.annotations) {
+                            currentDetailItem.annotations = currentDetailItem.annotations.filter(a => a.imgIdx !== idx);
+                            currentDetailItem.annotations.forEach(a => { if (a.imgIdx > idx) a.imgIdx--; });
+                        }
+                        renderDetail(currentDetailItem);
+                    }
+                    return;
+                }
+                const upBtn = e.target.closest('.img-move-up');
+                if (upBtn) {
+                    const idx = parseInt(upBtn.dataset.imgIdx);
+                    if (!isNaN(idx) && idx > 0 && currentDetailItem && currentDetailItem.images) {
+                        const arr = currentDetailItem.images;
+                        [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+                        if (currentDetailItem.annotations) {
+                            currentDetailItem.annotations.forEach(a => {
+                                if (a.imgIdx === idx) a.imgIdx = idx - 1;
+                                else if (a.imgIdx === idx - 1) a.imgIdx = idx;
+                            });
+                        }
+                        renderDetail(currentDetailItem);
+                    }
+                    return;
+                }
+                const downBtn = e.target.closest('.img-move-down');
+                if (downBtn) {
+                    const idx = parseInt(downBtn.dataset.imgIdx);
+                    if (!isNaN(idx) && currentDetailItem && currentDetailItem.images && idx < currentDetailItem.images
+                        .length - 1) {
+                        const arr = currentDetailItem.images;
+                        [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
+                        if (currentDetailItem.annotations) {
+                            currentDetailItem.annotations.forEach(a => {
+                                if (a.imgIdx === idx) a.imgIdx = idx + 1;
+                                else if (a.imgIdx === idx + 1) a.imgIdx = idx;
+                            });
+                        }
+                        renderDetail(currentDetailItem);
+                    }
+                    return;
+                }
+            });
+
+            document.addEventListener('change', function(e) {
+                const input = e.target.closest('#detail-add-images');
+                if (input && input.files && input.files.length > 0) {
+                    const files = Array.from(input.files);
+                    let loaded = 0;
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            const dataUrl = ev.target.result;
+                            if (currentDetailItem) {
+                                if (!currentDetailItem.images) currentDetailItem.images = [];
+                                currentDetailItem.images.push(dataUrl);
+                            }
+                            loaded++;
+                            if (loaded === files.length) {
+                                renderDetail(currentDetailItem);
+                                input.value = '';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    if (files.length === 0) input.value = '';
+                }
+            });
+
+            function updateDetailActions() {
+                if (isDetailEditing) {
+                    editBtn.style.display = 'none';
+                    previewBtn.style.display = 'inline-block';
+                    saveBtn.style.display = 'inline-block';
+                    cancelBtn.style.display = 'inline-block';
+                } else {
+                    editBtn.style.display = 'inline-block';
+                    previewBtn.style.display = 'none';
+                    saveBtn.style.display = 'none';
+                    cancelBtn.style.display = 'none';
+                }
+            }
+
+            editBtn.addEventListener('click', function() {
+                if (!currentDetailItem) return;
+                isDetailEditing = true;
+                renderDetail(currentDetailItem);
+                updateDetailActions();
+                const titleInput = document.getElementById('detail-title-edit');
+                if (titleInput) setTimeout(() => titleInput.focus(), 100);
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                isDetailEditing = false;
+                renderDetail(currentDetailItem);
+                updateDetailActions();
+            });
+
+            saveBtn.addEventListener('click', function() {
+                if (!currentDetailItem) return;
+                const titleInput = document.getElementById('detail-title-edit');
+                const textarea = document.getElementById('detail-text-edit');
+                const newTitle = titleInput ? titleInput.value.trim() : currentDetailItem.title;
+                const newText = textarea ? textarea.value : currentDetailItem.fullText;
+                const items = currentDetailType === 'text' ? textItems : comicItems;
+                if (currentDetailIndex >= 0 && currentDetailIndex < items.length) {
+                    items[currentDetailIndex].title = newTitle || '无标题';
+                    items[currentDetailIndex].fullText = newText || '';
+                    renderGrid(currentDetailType);
+                    currentDetailItem = items[currentDetailIndex];
+                    isDetailEditing = false;
+                    renderDetail(currentDetailItem);
+                    updateDetailActions();
+                }
+            });
+
+            // ===== 预览 =====
+            const previewOverlay = document.getElementById('preview-overlay');
+            const previewCloseBtn = document.getElementById('preview-close-btn');
+            const previewTitle = document.getElementById('preview-title');
+            const previewText = document.getElementById('preview-text');
+            const previewImages = document.getElementById('preview-images');
+
+            function openPreview() {
+                if (!currentDetailItem) return;
+                const titleInput = document.getElementById('detail-title-edit');
+                const textarea = document.getElementById('detail-text-edit');
+                const title = titleInput ? titleInput.value.trim() : currentDetailItem.title;
+                const text = textarea ? textarea.value : currentDetailItem.fullText;
+                const images = currentDetailItem.images || [];
+                previewTitle.textContent = title || '无标题';
+                previewText.textContent = text || '（暂无正文内容）';
+                let imgHtml = '';
+                if (images.length > 0) {
+                    if (images.length === 1) {
+                        imgHtml = `<img src="${images[0]}" alt="图片" style="max-height:400px;" />`;
+                    } else {
+                        imgHtml = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">`;
+                        images.forEach(src => {
+                            imgHtml += `<img src="${src}" alt="图片" style="height:150px;object-fit:cover;" />`;
+                        });
+                        imgHtml += `</div>`;
+                    }
+                } else {
+                    imgHtml = `<div class="preview-empty">此条目暂无图片</div>`;
+                }
+                previewImages.innerHTML = imgHtml;
+                previewOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closePreview() {
+                previewOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            previewBtn.addEventListener('click', openPreview);
+            previewCloseBtn.addEventListener('click', closePreview);
+            previewOverlay.addEventListener('click', function(e) {
+                if (e.target === previewOverlay) closePreview();
+            });
+
+            document.getElementById('detail-back-btn').addEventListener('click', function() {
+                if (isDetailEditing) {
+                    if (confirm('当前有未保存的修改，确定要退出吗？')) {
+                        isDetailEditing = false;
+                        showHomeView();
+                    }
+                } else {
+                    showHomeView();
+                }
+            });
+
+            // ============================================================
+            //  ★★★ Lightbox（含标注 + 缩放旋转） ★★★
+            // ============================================================
+            const lightboxOverlay = document.getElementById('lightbox-overlay');
+            const lbImage = document.getElementById('lb-image');
+            const lbCounter = document.getElementById('lb-counter');
+            const lbPrev = document.getElementById('lb-prev');
+            const lbNext = document.getElementById('lb-next');
+            const lbClose = document.getElementById('lb-close');
+            const lbContainer = document.getElementById('lb-container');
+            const lbImgWrapper = document.getElementById('lb-img-wrapper');
+            const lbAnnoLayer = document.getElementById('lb-annotation-layer');
+            const lbAnnoToggle = document.getElementById('lb-anno-toggle');
+
+            let lightboxImages = [];
+            let lightboxCurrentIndex = 0;
+            let lightboxIsOpen = false;
+            let annoMode = true;
+            let annoList = [];
+            let currentAnnoId = 0;
+
+            // 打开 Lightbox
+            function openLightbox(images, index, annotations) {
+                if (!images || images.length === 0) return;
+                lightboxImages = images.slice();
+                lightboxCurrentIndex = Math.max(0, Math.min(index, images.length - 1));
+                const safeAnno = Array.isArray(annotations) ? annotations : [];
+                // 确保每个标注有 scale 和 rotation 属性
+                annoList = safeAnno.filter(a => a.imgIdx === lightboxCurrentIndex).map(a => {
+                    if (a.scale === undefined) a.scale = 1;
+                    if (a.rotation === undefined) a.rotation = 0;
+                    return { ...a };
+                });
+                lightboxIsOpen = true;
+                annoMode = true;
+                lbAnnoToggle.textContent = '✏ 标注模式';
+                lbAnnoToggle.classList.add('active-tool');
+                showLightboxImage();
+                lightboxOverlay.classList.add('active');
+                document.body.classList.add('lightbox-open');
+                updateLightboxNav();
+            }
+
+            function showLightboxImage() {
+                if (!lightboxImages.length) return;
+                const src = lightboxImages[lightboxCurrentIndex];
+                lbImage.src = src;
+                lbImage.onload = function() {
+                    const allAnno = currentDetailItem ? (currentDetailItem.annotations || []) : [];
+                    annoList = allAnno.filter(a => a.imgIdx === lightboxCurrentIndex).map(a => {
+                        if (a.scale === undefined) a.scale = 1;
+                        if (a.rotation === undefined) a.rotation = 0;
+                        return { ...a };
+                    });
+                    renderAnnotations();
+                };
+                lbImage.onerror = function() {
+                    lbImage.src = '';
+                    lbImage.alt = '图片加载失败';
+                };
+                lbCounter.textContent = `${lightboxCurrentIndex + 1} / ${lightboxImages.length}`;
+                updateLightboxNav();
+            }
+
+            // 渲染标注
+            function renderAnnotations() {
+                lbAnnoLayer.innerHTML = '';
+                if (!annoMode) {
+                    lbAnnoLayer.classList.remove('lb-anno-editable');
+                    annoList.forEach(anno => {
+                        const el = createAnnoElement(anno, false);
+                        lbAnnoLayer.appendChild(el);
+                    });
+                    return;
+                }
+                lbAnnoLayer.classList.add('lb-anno-editable');
+                annoList.forEach(anno => {
+                    const el = createAnnoElement(anno, true);
+                    lbAnnoLayer.appendChild(el);
+                });
+            }
+
+            // ★★★ 创建标注 DOM（增加缩放和旋转手柄） ★★★
+            function createAnnoElement(anno, editable) {
+                const div = document.createElement('div');
+                div.className = 'lb-annotation';
+                if (editable) div.classList.add('editing');
+                // 应用位置、缩放、旋转
+                const scale = anno.scale || 1;
+                const rot = anno.rotation || 0;
+                div.style.left = (anno.x * 100) + '%';
+                div.style.top = (anno.y * 100) + '%';
+                div.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`;
+                div.dataset.annoId = anno.id;
+
+                // 点
+                const dot = document.createElement('div');
+                dot.className = 'anno-dot';
+                dot.style.background = anno.color || '#FF6B6B';
+                div.appendChild(dot);
+
+                // 标签
+                const label = document.createElement('div');
+                label.className = 'anno-label show';
+                label.textContent = anno.text || '标注';
+                div.appendChild(label);
+
+                if (editable) {
+                    // 编辑操作按钮
+                    const actions = document.createElement('div');
+                    actions.className = 'anno-edit-actions';
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'anno-edit-btn';
+                    editBtn.textContent = '✎';
+                    editBtn.title = '编辑文字';
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'anno-del-btn';
+                    delBtn.textContent = '✕';
+                    delBtn.title = '删除标注';
+                    actions.appendChild(editBtn);
+                    actions.appendChild(delBtn);
+                    div.appendChild(actions);
+
+                    // ★★★ 缩放手柄 ★★★
+                    const scaleHandle = document.createElement('div');
+                    scaleHandle.className = 'anno-handle anno-scale';
+                    scaleHandle.title = '拖拽缩放';
+                    div.appendChild(scaleHandle);
+
+                    // ★★★ 旋转手柄 ★★★
+                    const rotateHandle = document.createElement('div');
+                    rotateHandle.className = 'anno-handle anno-rotate';
+                    rotateHandle.title = '拖拽旋转';
+                    div.appendChild(rotateHandle);
+
+                    // ---------- 拖拽移动（原有逻辑） ----------
+                    div.addEventListener('mousedown', function(e) {
+                        if (e.target.closest('.anno-handle') || e.target.closest('.anno-edit-actions')) return;
+                        e.stopPropagation();
+                        startDragAnno(e, div, anno);
+                    });
+                    div.addEventListener('touchstart', function(e) {
+                        if (e.target.closest('.anno-handle') || e.target.closest('.anno-edit-actions')) return;
+                        e.stopPropagation();
+                        const touch = e.touches[0];
+                        const me = new MouseEvent('mousedown', {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY
+                        });
+                        startDragAnno(me, div, anno);
+                    }, { passive: true });
+
+                    // ---------- 缩放交互 ----------
+                    scaleHandle.addEventListener('mousedown', function(e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        startScaleRotate(e, anno, div, 'scale');
+                    });
+                    scaleHandle.addEventListener('touchstart', function(e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const me = new MouseEvent('mousedown', {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY
+                        });
+                        startScaleRotate(me, anno, div, 'scale');
+                    }, { passive: false });
+
+                    // ---------- 旋转交互 ----------
+                    rotateHandle.addEventListener('mousedown', function(e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        startScaleRotate(e, anno, div, 'rotate');
+                    });
+                    rotateHandle.addEventListener('touchstart', function(e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const me = new MouseEvent('mousedown', {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY
+                        });
+                        startScaleRotate(me, anno, div, 'rotate');
+                    }, { passive: false });
+
+                    // 编辑文字
+                    editBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        openAnnoEditor(anno);
+                    });
+
+                    // 删除
+                    delBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (confirm('删除此标注？')) {
+                            const idx = annoList.findIndex(a => a.id === anno.id);
+                            if (idx > -1) {
+                                annoList.splice(idx, 1);
+                                saveAnnotations();
+                                renderAnnotations();
+                            }
+                        }
+                    });
+                }
+                return div;
+            }
+
+            // ---------- 拖拽移动（原） ----------
+            function startDragAnno(e, el, anno) {
+                if (!annoMode) return;
+                const rect = lbImgWrapper.getBoundingClientRect();
+                const offsetX = (e.clientX - rect.left) / rect.width - anno.x;
+                const offsetY = (e.clientY - rect.top) / rect.height - anno.y;
+
+                function onMove(ev) {
+                    const clientX = ev.clientX || ev.touches?.[0]?.clientX;
+                    const clientY = ev.clientY || ev.touches?.[0]?.clientY;
+                    if (clientX == null) return;
+                    const rect2 = lbImgWrapper.getBoundingClientRect();
+                    let newX = (clientX - rect2.left) / rect2.width - offsetX;
+                    let newY = (clientY - rect2.top) / rect2.height - offsetY;
+                    newX = Math.max(0, Math.min(1, newX));
+                    newY = Math.max(0, Math.min(1, newY));
+                    anno.x = newX;
+                    anno.y = newY;
+                    updateAnnoTransform(el, anno);
+                    saveAnnotations();
+                }
+
+                function onEnd() {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onEnd);
+                    document.removeEventListener('touchmove', onMove);
+                    document.removeEventListener('touchend', onEnd);
+                }
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onEnd);
+                document.addEventListener('touchmove', onMove, { passive: true });
+                document.addEventListener('touchend', onEnd, { passive: true });
+            }
+
+            // ---------- 缩放 / 旋转（新增） ----------
+            function startScaleRotate(e, anno, el, type) {
+                if (!annoMode) return;
+                e.preventDefault();
+                const rect = lbImgWrapper.getBoundingClientRect();
+                // 计算当前标注中心在图片中的像素位置
+                const centerX = anno.x * rect.width + rect.left;
+                const centerY = anno.y * rect.height + rect.top;
+
+                let startScale = anno.scale || 1;
+                let startRot = anno.rotation || 0;
+                let startDist = 0;
+                let startAngle = 0;
+                let initialMouseX = e.clientX;
+                let initialMouseY = e.clientY;
+                if (type === 'scale') {
+                    // 计算初始距离（像素）
+                    const dx = e.clientX - centerX;
+                    const dy = e.clientY - centerY;
+                    startDist = Math.sqrt(dx * dx + dy * dy);
+                } else {
+                    // 计算初始角度（弧度）
+                    const dx = e.clientX - centerX;
+                    const dy = e.clientY - centerY;
+                    startAngle = Math.atan2(dy, dx);
+                }
+
+                function onMove(ev) {
+                    const cx = ev.clientX || ev.touches?.[0]?.clientX;
+                    const cy = ev.clientY || ev.touches?.[0]?.clientY;
+                    if (cx == null) return;
+                    if (type === 'scale') {
+                        const dx = cx - centerX;
+                        const dy = cy - centerY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        let scale = dist / startDist;
+                        scale = Math.max(0.2, Math.min(3, scale));
+                        anno.scale = scale;
+                        updateAnnoTransform(el, anno);
+                    } else {
+                        const dx = cx - centerX;
+                        const dy = cy - centerY;
+                        let angle = Math.atan2(dy, dx);
+                        let delta = angle - startAngle;
+                        let newRot = startRot + delta * (180 / Math.PI);
+                        // 限制旋转范围 -180~180
+                        if (newRot > 180) newRot -= 360;
+                        if (newRot < -180) newRot += 360;
+                        anno.rotation = newRot;
+                        updateAnnoTransform(el, anno);
+                    }
+                    saveAnnotations();
+                }
+
+                function onEnd() {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onEnd);
+                    document.removeEventListener('touchmove', onMove);
+                    document.removeEventListener('touchend', onEnd);
+                }
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onEnd);
+                document.addEventListener('touchmove', onMove, { passive: true });
+                document.addEventListener('touchend', onEnd, { passive: true });
+            }
+
+            // 更新单个标注的 transform
+            function updateAnnoTransform(el, anno) {
+                const scale = anno.scale || 1;
+                const rot = anno.rotation || 0;
+                el.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`;
+                el.style.left = (anno.x * 100) + '%';
+                el.style.top = (anno.y * 100) + '%';
+            }
+
+            // ★★★ 保存标注 ★★★
+            function saveAnnotations() {
+                if (!currentDetailItem) return;
+                if (!currentDetailItem.annotations) currentDetailItem.annotations = [];
+                currentDetailItem.annotations = currentDetailItem.annotations.filter(a => a.imgIdx !==
+                lightboxCurrentIndex);
+                annoList.forEach(a => {
+                    currentDetailItem.annotations.push({ ...a, imgIdx: lightboxCurrentIndex });
+                });
+            }
+
+            // ★★★ 打开标注编辑模态框 ★★★
+            function openAnnoEditor(anno) {
+                const overlay = document.getElementById('anno-input-overlay');
+                const textarea = document.getElementById('anno-input-text');
+                const confirmBtn = document.getElementById('anno-input-confirm');
+                const cancelBtn = document.getElementById('anno-input-cancel');
+
+                textarea.value = anno.text || '';
+                overlay.classList.add('active');
+
+                function done() {
+                    const val = textarea.value.trim();
+                    if (val) {
+                        anno.text = val;
+                        saveAnnotations();
+                        renderAnnotations();
+                    } else {
+                        // 如果文字为空，删除该标注
+                        const idx = annoList.findIndex(a => a.id === anno.id);
+                        if (idx > -1) {
+                            annoList.splice(idx, 1);
+                            saveAnnotations();
+                            renderAnnotations();
+                        }
+                    }
+                    overlay.classList.remove('active');
+                    document.removeEventListener('keydown', keyHandler);
+                }
+
+                function cancel() {
+                    if (!anno.text || anno.text.trim() === '') {
+                        const idx = annoList.findIndex(a => a.id === anno.id);
+                        if (idx > -1) {
+                            annoList.splice(idx, 1);
+                            saveAnnotations();
+                            renderAnnotations();
+                        }
+                    }
+                    overlay.classList.remove('active');
+                    document.removeEventListener('keydown', keyHandler);
+                }
+
+                function keyHandler(e) {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) done();
+                    if (e.key === 'Escape') cancel();
+                }
+                document.addEventListener('keydown', keyHandler);
+
+                confirmBtn.onclick = done;
+                cancelBtn.onclick = cancel;
+                overlay.onclick = function(e) { if (e.target === overlay) cancel(); };
+                setTimeout(() => textarea.focus(), 100);
+            }
+
+            // 导航
+            function updateLightboxNav() {
+                if (lightboxImages.length <= 1) {
+                    lbPrev.classList.add('hidden');
+                    lbNext.classList.add('hidden');
+                } else {
+                    lbPrev.classList.toggle('hidden', lightboxCurrentIndex === 0);
+                    lbNext.classList.toggle('hidden', lightboxCurrentIndex === lightboxImages.length - 1);
+                }
+            }
+
+            function goToPrev() {
+                if (lightboxCurrentIndex > 0) {
+                    saveAnnotations();
+                    lightboxCurrentIndex--;
+                    const allAnno = currentDetailItem ? (currentDetailItem.annotations || []) : [];
+                    annoList = allAnno.filter(a => a.imgIdx === lightboxCurrentIndex).map(a => {
+                        if (a.scale === undefined) a.scale = 1;
+                        if (a.rotation === undefined) a.rotation = 0;
+                        return { ...a };
+                    });
+                    showLightboxImage();
+                }
+            }
+
+            function goToNext() {
+                if (lightboxCurrentIndex < lightboxImages.length - 1) {
+                    saveAnnotations();
+                    lightboxCurrentIndex++;
+                    const allAnno = currentDetailItem ? (currentDetailItem.annotations || []) : [];
+                    annoList = allAnno.filter(a => a.imgIdx === lightboxCurrentIndex).map(a => {
+                        if (a.scale === undefined) a.scale = 1;
+                        if (a.rotation === undefined) a.rotation = 0;
+                        return { ...a };
+                    });
+                    showLightboxImage();
+                }
+            }
+
+            // 点击图片添加标注
+            function handleImageClick(e) {
+                if (!annoMode) return;
+                if (!currentDetailItem) {
+                    alert('请先打开一个条目');
+                    return;
+                }
+                const rect = lbImgWrapper.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                if (x < 0 || x > 1 || y < 0 || y > 1) return;
+
+                const newAnno = {
+                    id: ++currentAnnoId,
+                    x: Math.max(0.02, Math.min(0.98, x)),
+                    y: Math.max(0.02, Math.min(0.98, y)),
+                    text: '',
+                    color: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#FF6BD6', '#845EC2', '#FF9671', '#00C9A7'][Math
+                        .floor(Math.random() * 8)
+                    ],
+                    imgIdx: lightboxCurrentIndex,
+                    scale: 1,
+                    rotation: 0
+                };
+                annoList.push(newAnno);
+                saveAnnotations();
+                renderAnnotations();
+                openAnnoEditor(newAnno);
+            }
+
+            // 绑定点击事件（图片区域）
+            lbImgWrapper.addEventListener('click', function(e) {
+                if (e.target.closest('.lb-annotation')) return;
+                if (!annoMode) return;
+                const rect = lbImgWrapper.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                if (x < 0 || x > 1 || y < 0 || y > 1) return;
+                handleImageClick(e);
+            });
+
+            // 切换标注模式
+            lbAnnoToggle.addEventListener('click', function() {
+                annoMode = !annoMode;
+                this.textContent = annoMode ? '✏ 标注模式' : '👁 查看模式';
+                this.classList.toggle('active-tool', annoMode);
+                saveAnnotations();
+                renderAnnotations();
+                lbAnnoLayer.classList.toggle('lb-anno-editable', annoMode);
+            });
+
+            // 关闭 Lightbox
+            function closeLightbox() {
+                saveAnnotations();
+                lightboxOverlay.classList.remove('active');
+                document.body.classList.remove('lightbox-open');
+                lightboxIsOpen = false;
+                setTimeout(() => {
+                    if (!lightboxIsOpen) {
+                        lbImage.src = '';
+                        lbAnnoLayer.innerHTML = '';
+                    }
+                }, 300);
+            }
+
+            // Lightbox 事件
+            lbClose.addEventListener('click', closeLightbox);
+            lightboxOverlay.addEventListener('click', function(e) {
+                if (e.target === lightboxOverlay || e.target === lbContainer) {
+                    closeLightbox();
+                }
+            });
+            lbPrev.addEventListener('click', function(e) { e.stopPropagation();
+                goToPrev(); });
+            lbNext.addEventListener('click', function(e) { e.stopPropagation();
+                goToNext(); });
+
+            document.addEventListener('keydown', function(e) {
+                if (!lightboxIsOpen) return;
+                if (e.key === 'Escape') closeLightbox();
+                else if (e.key === 'ArrowLeft') goToPrev();
+                else if (e.key === 'ArrowRight') goToNext();
+            });
+
+            // ===== 详情页图片点击 =====
+            document.addEventListener('click', function(e) {
+                const img = e.target.closest('#detail-body img');
+                if (!img) return;
+                if (!viewDetail.classList.contains('active')) return;
+                const indexAttr = img.getAttribute('data-img-index');
+                if (indexAttr === null) return;
+                const index = parseInt(indexAttr);
+                if (isNaN(index)) return;
+                if (!currentDetailItem || !currentDetailItem.images || currentDetailItem.images.length === 0) return;
+                const annotations = currentDetailItem.annotations || [];
+                openLightbox(currentDetailItem.images, index, annotations);
+            });
+
+            // ============================================================
+            //  数据管理（保持不变）
+            // ============================================================
+            let textItems = [];
+            let comicItems = [];
+            const editStateMap = new Map();
+
+            function getEditKey(type, index) { return `${type}-${index}`; }
+
+            function isCardEditing(type, index) { return editStateMap.get(getEditKey(type, index)) === true; }
+
+            function setCardEditing(type, index, editing) {
+                if (editing) editStateMap.set(getEditKey(type, index), true);
+                else editStateMap.delete(getEditKey(type, index));
+            }
+
+            const tempCoverMap = new Map();
+
+            function renderGrid(type) {
+                const gridId = type === 'text' ? 'text-grid' : 'comic-grid';
+                const grid = document.getElementById(gridId);
+                const items = type === 'text' ? textItems : comicItems;
+                if (items.length === 0) {
+                    grid.innerHTML =
+                        `<div class="empty-hint">${type === 'text' ? '✨' : '🎨'} 还没有内容，上传一条吧</div>`;
+                    return;
+                }
+                let html = '';
+                items.forEach((item, index) => {
+                    const key = getEditKey(type, index);
+                    const editing = isCardEditing(type, index);
+                    const coverSrc = tempCoverMap.has(key) ? tempCoverMap.get(key) : (item.image || '');
+                    html += `
+                        <div class="card ${editing ? 'editing' : ''}" data-type="${type}" data-index="${index}">
+                            <img class="card-cover" src="${coverSrc}" alt="封面" onerror="this.style.display='none'" />
+                            <div class="card-view">
+                                <div class="card-title">${escapeHtml(item.title) || '无标题'}</div>
+                                <div class="card-desc">${escapeHtml(item.desc) || '暂无介绍'}</div>
+                            </div>
+                            <div class="card-edit">
+                                <input class="card-title-input" id="card-title-${type}-${index}" value="${escapeHtml(item.title || '无标题')}" placeholder="标题" />
+                                <textarea class="card-desc-input" id="card-desc-${type}-${index}" placeholder="描述" rows="2">${escapeHtml(item.desc || '')}</textarea>
+                                <div class="card-edit-cover">
+                                    <img class="card-edit-cover-preview" id="cover-preview-${type}-${index}" src="${coverSrc}" alt="封面预览" onerror="this.src=''"/>
+                                    <label class="card-edit-cover-btn">
+                                        📷 更换封面
+                                        <input type="file" accept="image/*" class="card-cover-upload" data-type="${type}" data-index="${index}" />
+                                    </label>
+                                    <span class="card-edit-cover-hint">点击上传 · 可裁剪缩放</span>
+                                </div>
+                                <div class="card-edit-actions">
+                                    <button class="card-edit-btn-sm save-sm" data-type="${type}" data-index="${index}" data-action="save-card">保存</button>
+                                    <button class="card-edit-btn-sm cancel-sm" data-type="${type}" data-index="${index}" data-action="cancel-card">取消</button>
+                                </div>
+                            </div>
+                            <button class="card-edit-toggle" data-type="${type}" data-index="${index}" data-action="edit-toggle" title="编辑标题、描述和封面">✎</button>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            }
+
+            // ============================================================
+            //  裁剪功能（保持不变）
+            // ============================================================
+            const cropOverlay = document.getElementById('crop-overlay');
+            const cropImage = document.getElementById('crop-image');
+            const cropContainer = document.getElementById('crop-container');
+            const cropCloseBtn = document.getElementById('crop-close-btn');
+            const cropCancelBtn = document.getElementById('crop-cancel-btn');
+            const cropConfirmBtn = document.getElementById('crop-confirm-btn');
+            const zoomSlider = document.getElementById('zoom-slider');
+            const zoomLabel = document.getElementById('zoom-label');
+            const zoomResetBtn = document.getElementById('zoom-reset-btn');
+
+            let cropState = {
+                img: null,
+                dataUrl: null,
+                offsetX: 0,
+                offsetY: 0,
+                startX: 0,
+                startY: 0,
+                isDragging: false,
+                baseScale: 1,
+                userScaleFactor: 1,
+                minScaleFactor: 0.25,
+                maxScaleFactor: 2.5,
+                containerWidth: 0,
+                containerHeight: 0,
+                imgNaturalWidth: 0,
+                imgNaturalHeight: 0,
+                targetType: null,
+                targetIndex: null,
+            };
+
+            function calcBaseScale() {
+                if (!cropState.img) return 1;
+                const cw = cropState.containerWidth;
+                const ch = cropState.containerHeight;
+                const iw = cropState.imgNaturalWidth;
+                const ih = cropState.imgNaturalHeight;
+                if (cw === 0 || ch === 0 || iw === 0 || ih === 0) return 1;
+                return Math.max(cw / iw, ch / ih, 0.3);
+            }
+
+            function updateCropView() {
+                if (!cropState.img) return;
+                const base = cropState.baseScale;
+                const user = cropState.userScaleFactor;
+                const eff = base * user;
+                const iw = cropState.imgNaturalWidth * eff;
+                const ih = cropState.imgNaturalHeight * eff;
+                const cx = cropState.containerWidth / 2;
+                const cy = cropState.containerHeight / 2;
+                const tx = cx - iw / 2 + cropState.offsetX;
+                const ty = cy - ih / 2 + cropState.offsetY;
+                cropImage.style.width = iw + 'px';
+                cropImage.style.height = ih + 'px';
+                cropImage.style.transform = `translate(${tx}px, ${ty}px)`;
+                zoomLabel.textContent = Math.round(user * 100) + '%';
+                zoomSlider.value = user * 100;
+            }
+
+            function resetCropView() {
+                cropState.userScaleFactor = 1;
+                cropState.offsetX = 0;
+                cropState.offsetY = 0;
+                updateCropView();
+            }
+
+            function zoomCrop(delta) {
+                const old = cropState.userScaleFactor;
+                let n = old + delta;
+                n = Math.max(cropState.minScaleFactor, Math.min(cropState.maxScaleFactor, n));
+                if (n === old) return;
+                const base = cropState.baseScale;
+                const oldEff = base * old;
+                const newEff = base * n;
+                const cx = cropState.containerWidth / 2;
+                const cy = cropState.containerHeight / 2;
+                const iw = cropState.imgNaturalWidth * oldEff;
+                const ih = cropState.imgNaturalHeight * oldEff;
+                const left = cx - iw / 2 + cropState.offsetX;
+                const top = cy - ih / 2 + cropState.offsetY;
+                const cx2 = left + iw / 2;
+                const cy2 = top + ih / 2;
+                const ocx = cx2 - cx;
+                const ocy = cy2 - cy;
+                const nw = cropState.imgNaturalWidth * newEff;
+                const nh = cropState.imgNaturalHeight * newEff;
+                const nl = cx + ocx - nw / 2;
+                const nt = cy + ocy - nh / 2;
+                cropState.offsetX = nl - (cx - nw / 2);
+                cropState.offsetY = nt - (cy - nh / 2);
+                cropState.userScaleFactor = n;
+                updateCropView();
+            }
+
+            function openCropModal(dataUrl, type, index) {
+                cropState.targetType = type;
+                cropState.targetIndex = index;
+                cropState.dataUrl = dataUrl;
+                cropState.userScaleFactor = 1;
+                cropState.offsetX = 0;
+                cropState.offsetY = 0;
+                const img = new Image();
+                img.onload = function() {
+                    cropState.img = img;
+                    cropState.imgNaturalWidth = img.naturalWidth;
+                    cropState.imgNaturalHeight = img.naturalHeight;
+                    cropImage.src = dataUrl;
+                    const rect = cropContainer.getBoundingClientRect();
+                    cropState.containerWidth = rect.width;
+                    cropState.containerHeight = rect.height;
+                    cropState.baseScale = calcBaseScale();
+                    resetCropView();
+                    cropOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                };
+                img.onerror = function() { alert('图片加载失败'); };
+                img.src = dataUrl;
+            }
+
+            function closeCropModal() {
+                cropOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                cropState.img = null;
+                cropState.dataUrl = null;
+                cropState.targetType = null;
+                cropState.targetIndex = null;
+                cropImage.src = '';
+                cropImage.style.width = '';
+                cropImage.style.height = '';
+                cropImage.style.transform = '';
+            }
+
+            function getEventPos(e) {
+                const rect = cropContainer.getBoundingClientRect();
+                let cx, cy;
+                if (e.touches) { cx = e.touches[0].clientX;
+                    cy = e.touches[0].clientY; } else { cx = e.clientX;
+                    cy = e.clientY; }
+                return { x: cx - rect.left, y: cy - rect.top };
+            }
+
+            function startDrag(e) {
+                if (!cropState.img) return;
+                e.preventDefault();
+                const pos = getEventPos(e);
+                cropState.startX = pos.x - cropState.offsetX;
+                cropState.startY = pos.y - cropState.offsetY;
+                cropState.isDragging = true;
+                cropContainer.style.cursor = 'grabbing';
+            }
+
+            function moveDrag(e) {
+                if (!cropState.isDragging || !cropState.img) return;
+                e.preventDefault();
+                const pos = getEventPos(e);
+                cropState.offsetX = pos.x - cropState.startX;
+                cropState.offsetY = pos.y - cropState.startY;
+                const eff = cropState.baseScale * cropState.userScaleFactor;
+                const iw = cropState.imgNaturalWidth * eff;
+                const ih = cropState.imgNaturalHeight * eff;
+                const mx = Math.max(iw / 2 - cropState.containerWidth / 2 + 30, 30);
+                const my = Math.max(ih / 2 - cropState.containerHeight / 2 + 30, 30);
+                cropState.offsetX = Math.max(-mx, Math.min(mx, cropState.offsetX));
+                cropState.offsetY = Math.max(-my, Math.min(my, cropState.offsetY));
+                updateCropView();
+            }
+
+            function endDrag() {
+                if (cropState.isDragging) {
+                    cropState.isDragging = false;
+                    cropContainer.style.cursor = 'grab';
+                }
+            }
+
+            cropContainer.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', moveDrag);
+            document.addEventListener('mouseup', endDrag);
+            cropContainer.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', moveDrag, { passive: false });
+            document.addEventListener('touchend', endDrag, { passive: false });
+
+            cropContainer.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                if (!cropState.img) return;
+                zoomCrop(e.deltaY > 0 ? -0.08 : 0.08);
+            }, { passive: false });
+
+            zoomSlider.addEventListener('input', function() {
+                if (!cropState.img) return;
+                const val = parseFloat(this.value) / 100;
+                const old = cropState.userScaleFactor;
+                if (val === old) return;
+                const n = Math.max(cropState.minScaleFactor, Math.min(cropState.maxScaleFactor, val));
+                if (n === old) return;
+                const base = cropState.baseScale;
+                const oldEff = base * old;
+                const newEff = base * n;
+                const cx = cropState.containerWidth / 2;
+                const cy = cropState.containerHeight / 2;
+                const iw = cropState.imgNaturalWidth * oldEff;
+                const ih = cropState.imgNaturalHeight * oldEff;
+                const left = cx - iw / 2 + cropState.offsetX;
+                const top = cy - ih / 2 + cropState.offsetY;
+                const cx2 = left + iw / 2;
+                const cy2 = top + ih / 2;
+                const ocx = cx2 - cx;
+                const ocy = cy2 - cy;
+                const nw = cropState.imgNaturalWidth * newEff;
+                const nh = cropState.imgNaturalHeight * newEff;
+                const nl = cx + ocx - nw / 2;
+                const nt = cy + ocy - nh / 2;
+                cropState.offsetX = nl - (cx - nw / 2);
+                cropState.offsetY = nt - (cy - nh / 2);
+                cropState.userScaleFactor = n;
+                updateCropView();
+            });
+
+            zoomResetBtn.addEventListener('click', function() { if (cropState.img) resetCropView(); });
+
+            function confirmCrop() {
+                if (!cropState.img) return;
+                const eff = cropState.baseScale * cropState.userScaleFactor;
+                const iw = cropState.imgNaturalWidth * eff;
+                const ih = cropState.imgNaturalHeight * eff;
+                const cw = cropState.containerWidth;
+                const ch = cropState.containerHeight;
+                const cx = cw / 2,
+                    cy = ch / 2;
+                const left = cx - iw / 2 + cropState.offsetX;
+                const top = cy - ih / 2 + cropState.offsetY;
+                const sx = -left / eff,
+                    sy = -top / eff;
+                const sw = cw / eff,
+                    sh = ch / eff;
+                const fsx = Math.max(0, Math.min(cropState.imgNaturalWidth - sw, sx));
+                const fsy = Math.max(0, Math.min(cropState.imgNaturalHeight - sh, sy));
+                const fsw = Math.min(sw, cropState.imgNaturalWidth - fsx);
+                const fsh = Math.min(sh, cropState.imgNaturalHeight - fsy);
+                if (fsw < 1 || fsh < 1) { alert('裁剪区域太小'); return; }
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                const cctx = canvas.getContext('2d');
+                cctx.imageSmoothingEnabled = true;
+                cctx.imageSmoothingQuality = 'high';
+                cctx.drawImage(cropState.img, fsx, fsy, fsw, fsh, 0, 0, 400, 300);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                const key = getEditKey(cropState.targetType, cropState.targetIndex);
+                tempCoverMap.set(key, dataUrl);
+                const preview = document.getElementById(`cover-preview-${cropState.targetType}-${cropState.targetIndex}`);
+                if (preview) preview.src = dataUrl;
+                closeCropModal();
+            }
+
+            cropCloseBtn.addEventListener('click', closeCropModal);
+            cropCancelBtn.addEventListener('click', closeCropModal);
+            cropConfirmBtn.addEventListener('click', confirmCrop);
+            cropOverlay.addEventListener('click', function(e) { if (e.target === cropOverlay) closeCropModal(); });
+
+            // ============================================================
+            //  卡片事件（保持不变）
+            // ============================================================
+            document.addEventListener('click', function(e) {
+                const toggle = e.target.closest('.card-edit-toggle');
+                if (toggle) {
+                    e.stopPropagation();
+                    const type = toggle.dataset.type;
+                    const index = parseInt(toggle.dataset.index);
+                    if (!isNaN(index) && type) {
+                        const key = getEditKey(type, index);
+                        tempCoverMap.delete(key);
+                        setCardEditing(type, index, true);
+                        renderGrid(type);
+                        setTimeout(() => {
+                            const input = document.getElementById(`card-title-${type}-${index}`);
+                            if (input) input.focus();
+                        }, 50);
+                    }
+                    return;
+                }
+
+                const saveCard = e.target.closest('[data-action="save-card"]');
+                if (saveCard) {
+                    e.stopPropagation();
+                    const type = saveCard.dataset.type;
+                    const index = parseInt(saveCard.dataset.index);
+                    if (!isNaN(index) && type) {
+                        const ti = document.getElementById(`card-title-${type}-${index}`);
+                        const di = document.getElementById(`card-desc-${type}-${index}`);
+                        const items = type === 'text' ? textItems : comicItems;
+                        const key = getEditKey(type, index);
+                        if (items[index]) {
+                            items[index].title = ti ? ti.value.trim() || '无标题' : items[index].title;
+                            items[index].desc = di ? di.value.trim() || '' : items[index].desc;
+                            if (tempCoverMap.has(key)) {
+                                items[index].image = tempCoverMap.get(key);
+                                tempCoverMap.delete(key);
+                            }
+                            setCardEditing(type, index, false);
+                            renderGrid(type);
+                            if (currentDetailItem === items[index] && viewDetail.classList.contains('active')) {
+                                renderDetail(currentDetailItem);
+                            }
+                        }
+                    }
+                    return;
+                }
+
+                const cancelCard = e.target.closest('[data-action="cancel-card"]');
+                if (cancelCard) {
+                    e.stopPropagation();
+                    const type = cancelCard.dataset.type;
+                    const index = parseInt(cancelCard.dataset.index);
+                    if (!isNaN(index) && type) {
+                        const key = getEditKey(type, index);
+                        tempCoverMap.delete(key);
+                        setCardEditing(type, index, false);
+                        renderGrid(type);
+                    }
+                    return;
+                }
+
+                const card = e.target.closest('.card');
+                if (card && !card.classList.contains('editing')) {
+                    const type = card.dataset.type;
+                    const index = parseInt(card.dataset.index);
+                    if (!isNaN(index) && type) {
+                        const items = type === 'text' ? textItems : comicItems;
+                        if (index < items.length) showDetailView(type, index);
+                    }
+                }
+            });
+
+            document.addEventListener('change', function(e) {
+                const input = e.target.closest('.card-cover-upload');
+                if (input) {
+                    const type = input.dataset.type;
+                    const index = parseInt(input.dataset.index);
+                    const file = input.files[0];
+                    if (file && !isNaN(index) && type) {
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            openCropModal(ev.target.result, type, index);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    input.value = '';
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.card.editing').forEach(card => {
+                        const type = card.dataset.type;
+                        const index = parseInt(card.dataset.index);
+                        if (!isNaN(index) && type) {
+                            const key = getEditKey(type, index);
+                            tempCoverMap.delete(key);
+                            setCardEditing(type, index, false);
+                            renderGrid(type);
+                        }
+                    });
+                }
+            });
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function pushItem(type, title, desc, image, fullText, images) {
+                const items = type === 'text' ? textItems : comicItems;
+                items.push({ title, desc, image, fullText, images, annotations: [] });
+                renderGrid(type);
+            }
+
+            // ===== 主模态框 =====
+            const overlay = document.getElementById('modal-overlay');
+            const closeBtn = document.getElementById('modal-close');
+            const cancelBtnModal = document.getElementById('modal-cancel');
+            const saveBtnModal = document.getElementById('modal-save');
+            const titleInput = document.getElementById('modal-title-input');
+            const descInput = document.getElementById('modal-desc-input');
+            const fileInput = document.getElementById('modal-file-input');
+            const previewDiv = document.getElementById('modal-preview');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBadge = document.getElementById('modal-badge');
+
+            let currentType = 'text';
+            let parsedImages = [];
+            let parsedText = '';
+
+            function openModal(type) {
+                currentType = type;
+                modalTitle.textContent = type === 'text' ? '添加文本' : '添加漫本';
+                modalBadge.textContent = type === 'text' ? '📖 文本' : '🎨 漫本';
+                modalBadge.className = 'modal-badge ' + (type === 'text' ? 'text-badge' : 'comic-badge');
+                titleInput.value = '';
+                descInput.value = '';
+                fileInput.value = '';
+                parsedImages = [];
+                parsedText = '';
+                previewDiv.innerHTML =
+                    `<div style="color:#5a7a8a; text-align:center; padding:20px;">上传文件后，将自动提取文字和图片</div>`;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtnModal.addEventListener('click', closeModal);
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+
+            document.getElementById('open-text-modal').addEventListener('click', function() { openModal('text'); });
+            document.getElementById('open-comic-modal').addEventListener('click', function() { openModal('comic'); });
+
+            // ===== 文件解析 =====
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const ext = file.name.split('.').pop().toLowerCase();
+                const reader = new FileReader();
+                previewDiv.innerHTML = '<div style="color:#5a7a8a; text-align:center; padding:10px;">解析中...</div>';
+                parsedImages = [];
+                parsedText = '';
+
+                if (ext === 'docx') {
+                    reader.readAsArrayBuffer(file);
+                    reader.onload = function(e) {
+                        const buf = e.target.result;
+                        mammoth.convertToHtml({ arrayBuffer: buf }).then(function(result) {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = result.value;
+                            parsedText = temp.textContent || '';
+                            const imgRegex = /<img[^>]+src="([^">]+)"/g;
+                            let match,
+                                imgs = [];
+                            while ((match = imgRegex.exec(result.value)) !== null) {
+                                if (match[1].startsWith('data:image')) imgs.push(match[1]);
+                            }
+                            parsedImages = imgs;
+                            renderPreview(parsedText, parsedImages);
+                        }).catch(function(err) {
+                            previewDiv.innerHTML = `<div style="color:#c0392b;">解析失败：${err.message}</div>`;
+                        });
+                    };
+                } else if (ext === 'txt' || ext === 'md') {
+                    reader.readAsText(file);
+                    reader.onload = function(e) {
+                        parsedText = e.target.result;
+                        parsedImages = [];
+                        renderPreview(parsedText, parsedImages);
+                    };
+                } else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+                    reader.readAsDataURL(file);
+                    reader.onload = function(e) {
+                        parsedText = '';
+                        parsedImages = [e.target.result];
+                        renderPreview(parsedText, parsedImages);
+                    };
+                } else {
+                    previewDiv.innerHTML =
+                        `<div style="color:#c0392b;">不支持的文件格式，请上传 .docx .txt .md 或图片</div>`;
+                }
+            });
+
+            function renderPreview(text, images) {
+                let html = '';
+                if (text) html += `<div class="modal-preview-text">${escapeHtml(text)}</div>`;
+                if (images.length > 0) images.forEach(src => { html +=
+                        `<img class="modal-preview-image" src="${src}" alt="图片" />`; });
+                if (!text && images.length === 0) html =
+                    `<div style="color:#5a7a8a; text-align:center; padding:20px;">未提取到文字或图片</div>`;
+                previewDiv.innerHTML = html;
+                if (text) {
+                    const first = text.split('\n')[0].trim();
+                    if (first && !titleInput.value) titleInput.value = first.substring(0, 30);
+                    if (!descInput.value) {
+                        const rest = text.split('\n').slice(1).join('\n').trim();
+                        descInput.value = rest.substring(0, 100);
+                    }
+                }
+                if (images.length > 0 && !titleInput.value) titleInput.value = '图片内容';
+            }
+
+            saveBtnModal.addEventListener('click', function() {
+                const title = titleInput.value.trim() || '无标题';
+                const desc = descInput.value.trim() || '';
+                const cover = parsedImages.length > 0 ? parsedImages[0] : '';
+                const fullText = parsedText;
+                const images = parsedImages.slice();
+                pushItem(currentType, title, desc, cover, fullText, images);
+                closeModal();
+                parsedImages = [];
+                parsedText = '';
+                fileInput.value = '';
+            });
+
+            // ===== 初始化 =====
+            renderGrid('text');
+            renderGrid('comic');
+            console.log('✅ 完整功能已加载：批注支持缩放和旋转（拖拽手柄）');
+        })();
+    </script>
+</body>
+</html>
