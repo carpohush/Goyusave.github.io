@@ -8,7 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js">
     </script>
     <style>
-        /* ===== 字体 ===== */
         @font-face {
             font-family: 'HuiwenMingchao';
             src: url('fonts/huiwenmingchao.woff2') format('woff2'),
@@ -18,7 +17,6 @@
             font-style: normal;
         }
 
-        /* ===== 全局重置 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -54,7 +52,6 @@
             padding: 0 24px 40px;
         }
 
-        /* ===== 导航栏 ===== */
         .navbar {
             position: fixed;
             top: 0;
@@ -70,6 +67,8 @@
             justify-content: space-between;
             z-index: 100;
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .navbar-brand {
             font-family: '仿宋', 'FangSong', serif;
@@ -81,6 +80,12 @@
             background-clip: text;
             letter-spacing: 2px;
             text-shadow: 0 2px 8px rgba(135, 206, 235, 0.3);
+        }
+        .navbar-center {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .nav-links {
             display: flex;
@@ -112,7 +117,48 @@
             box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
         }
 
-        /* ===== 主视觉 ===== */
+        .sync-btns {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .sync-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 30px;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #1e3b4a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        .sync-btn:hover {
+            transform: scale(1.06);
+            background: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 4px 16px rgba(135, 206, 235, 0.15);
+        }
+        .sync-btn.export-btn {
+            background: rgba(135, 206, 235, 0.25);
+            border-color: rgba(135, 206, 235, 0.3);
+        }
+        .sync-btn.export-btn:hover {
+            background: rgba(135, 206, 235, 0.45);
+        }
+        .sync-btn.import-btn {
+            background: rgba(255, 200, 150, 0.25);
+            border-color: rgba(255, 200, 150, 0.3);
+        }
+        .sync-btn.import-btn:hover {
+            background: rgba(255, 200, 150, 0.45);
+        }
+        .sync-btn input[type="file"] {
+            display: none;
+        }
+
         .hero {
             text-align: center;
             padding: 40px 20px 30px;
@@ -145,7 +191,6 @@
             letter-spacing: 2px;
         }
 
-        /* ===== 视图 ===== */
         .view {
             display: none;
             animation: fadeIn 0.35s ease;
@@ -170,7 +215,6 @@
             display: block;
         }
 
-        /* ===== 卡片 ===== */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -272,6 +316,7 @@
             min-height: 60px;
             resize: vertical;
         }
+
         .card-edit-cover {
             display: flex;
             align-items: center;
@@ -318,6 +363,7 @@
             color: #5a7a8a;
             opacity: 0.7;
         }
+
         .card-edit-actions {
             display: flex;
             gap: 10px;
@@ -355,38 +401,59 @@
         .card-edit-btn-sm.cancel-sm:hover {
             background: rgba(200, 200, 200, 0.4);
         }
-        .card-edit-toggle {
+
+        .card-actions {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 32px;
-            height: 32px;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+            align-items: center;
+        }
+        .card-edit-toggle,
+        .card-delete-btn {
+            width: 30px;
+            height: 30px;
             border: none;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: #1e3b4a;
-            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             cursor: pointer;
             transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            z-index: 5;
-            opacity: 0.7;
+            font-size: 0.85rem;
+            line-height: 1;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .card-edit-toggle {
+            background: rgba(255, 255, 255, 0.45);
+            color: #1e3b4a;
         }
         .card-edit-toggle:hover {
-            transform: scale(1.15);
-            background: rgba(255, 255, 255, 0.65);
+            transform: scale(1.12);
+            background: rgba(255, 255, 255, 0.7);
             box-shadow: 0 4px 16px rgba(135, 206, 235, 0.2);
-            opacity: 1;
+        }
+        .card-delete-btn {
+            background: rgba(255, 80, 80, 0.35);
+            color: #c0392b;
+            border-color: rgba(255, 80, 80, 0.2);
+            font-size: 0.75rem;
+        }
+        .card-delete-btn:hover {
+            transform: scale(1.12);
+            background: rgba(255, 60, 60, 0.6);
+            box-shadow: 0 4px 16px rgba(200, 50, 50, 0.25);
+            color: #fff;
         }
         .card.editing .card-edit-toggle {
             display: none;
         }
+
         .empty-hint {
             grid-column: 1 / -1;
             padding: 60px 20px;
@@ -399,7 +466,6 @@
             border: 1px dashed rgba(135, 206, 235, 0.3);
         }
 
-        /* ===== 详情视图 ===== */
         .detail-back-wrap {
             margin-bottom: 12px;
             text-align: left;
@@ -535,7 +601,6 @@
             font-size: 1.2rem;
         }
 
-        /* ★★★ 图片管理器 ★★★ */
         .image-manager {
             margin-top: 20px;
             padding-top: 16px;
@@ -724,7 +789,6 @@
             background: rgba(200, 230, 200, 0.5);
         }
 
-        /* ===== 预览模态框 ===== */
         .preview-overlay {
             position: fixed;
             top: 0;
@@ -807,7 +871,6 @@
             font-size: 1.1rem;
         }
 
-        /* ===== ★★★ Lightbox（含标注） ★★★ ===== */
         .lightbox-overlay {
             position: fixed;
             top: 0;
@@ -924,7 +987,6 @@
             user-select: none;
             -webkit-user-select: none;
         }
-        /* ★★★ 标注层 ★★★ */
         .lb-annotation-layer {
             position: absolute;
             top: 0;
@@ -938,7 +1000,6 @@
         .lb-annotation-layer.lb-anno-editable {
             pointer-events: auto;
         }
-        /* ★★★ 单个标注元素 ★★★ */
         .lb-annotation {
             position: absolute;
             pointer-events: auto;
@@ -948,7 +1009,6 @@
             transition: transform 0.1s;
             min-width: 20px;
             min-height: 20px;
-            /* transform 将由 JS 直接控制 */
         }
         .lb-annotation:hover {
             z-index: 5;
@@ -1043,7 +1103,6 @@
             background: rgba(50, 150, 220, 0.95);
         }
 
-        /* ★★★ 缩放 / 旋转 手柄 ★★★ */
         .anno-handle {
             position: absolute;
             width: 16px;
@@ -1087,7 +1146,6 @@
             background: rgba(255, 215, 0, 0.5);
         }
 
-        /* ===== 标注输入模态框 ===== */
         .anno-input-overlay {
             position: fixed;
             top: 0;
@@ -1233,7 +1291,6 @@
             background: rgba(135, 206, 235, 0.5);
         }
 
-        /* ===== 添加按钮 ===== */
         .add-btn-wrap {
             text-align: center;
             margin: 20px 0 30px;
@@ -1262,7 +1319,6 @@
             background: rgba(255, 160, 180, 0.6);
         }
 
-        /* ===== 主模态框 ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1404,7 +1460,6 @@
             margin-top: 24px;
         }
 
-        /* ===== 裁剪模态框 ===== */
         .crop-overlay {
             position: fixed;
             top: 0;
@@ -1661,7 +1716,6 @@
             box-shadow: 0 6px 24px rgba(135, 206, 235, 0.2);
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 700px) {
             .navbar {
                 flex-direction: column;
@@ -1669,6 +1723,14 @@
                 padding: 12px 16px;
             }
             .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            .navbar-center {
+                width: 100%;
+                justify-content: center;
+            }
+            .sync-btns {
                 width: 100%;
                 justify-content: center;
             }
@@ -1705,12 +1767,19 @@
                 padding: 6px 20px;
                 font-size: 0.95rem;
             }
+            .card-actions {
+                top: 8px;
+                right: 8px;
+                gap: 4px;
+            }
+            .card-edit-toggle,
+            .card-delete-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
+            }
             .card-edit-toggle {
-                width: 28px;
-                height: 28px;
-                font-size: 0.8rem;
-                top: 12px;
-                right: 12px;
+                font-size: 0.75rem;
             }
             .card-edit-cover {
                 flex-direction: column;
@@ -1817,9 +1886,18 @@
 
     <nav class="navbar">
         <span class="navbar-brand">🌸 GOYU</span>
-        <div class="nav-links">
-            <button class="nav-btn active" data-tab="text">📖 文本</button>
-            <button class="nav-btn" data-tab="comic">🎨 漫本</button>
+        <div class="navbar-center">
+            <div class="nav-links">
+                <button class="nav-btn active" data-tab="text">📖 文本</button>
+                <button class="nav-btn" data-tab="comic">🎨 漫本</button>
+            </div>
+            <div class="sync-btns">
+                <button class="sync-btn export-btn" id="export-data-btn">📤 导出数据</button>
+                <label class="sync-btn import-btn" id="import-data-label">
+                    📥 导入数据
+                    <input type="file" id="import-data-input" accept=".json" />
+                </label>
+            </div>
         </div>
     </nav>
 
@@ -1829,7 +1907,6 @@
             <p>我期待你的未来 · 怎么可能忘得掉</p>
         </header>
 
-        <!-- ===== 首页 ===== -->
         <div id="view-home" class="view active">
             <div id="section-text" class="section active">
                 <div class="card-grid" id="text-grid">
@@ -1849,7 +1926,6 @@
             </div>
         </div>
 
-        <!-- ===== 详情视图 ===== -->
         <div id="view-detail" class="view">
             <div class="detail-back-wrap">
                 <button class="detail-back-btn" id="detail-back-btn">← 返回</button>
@@ -1867,7 +1943,6 @@
         </div>
     </div>
 
-    <!-- ===== 预览模态框 ===== -->
     <div class="preview-overlay" id="preview-overlay">
         <div class="preview-box">
             <button class="preview-close" id="preview-close-btn">✕</button>
@@ -1877,7 +1952,6 @@
         </div>
     </div>
 
-    <!-- ===== ★★★ Lightbox ★★★ ===== -->
     <div class="lightbox-overlay" id="lightbox-overlay">
         <button class="lb-close" id="lb-close">✕</button>
         <div class="lb-toolbar" id="lb-toolbar">
@@ -1894,7 +1968,6 @@
         </div>
     </div>
 
-    <!-- ===== ★★★ 标注输入模态框 ★★★ ===== -->
     <div class="anno-input-overlay" id="anno-input-overlay">
         <div class="anno-input-box">
             <h3>✎ 标注文字</h3>
@@ -1906,7 +1979,6 @@
         </div>
     </div>
 
-    <!-- ===== 主模态框 ===== -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-box">
             <button class="modal-close" id="modal-close">✕</button>
@@ -1930,7 +2002,6 @@
         </div>
     </div>
 
-    <!-- ===== 裁剪模态框 ===== -->
     <div class="crop-overlay" id="crop-overlay">
         <div class="crop-box">
             <div class="crop-header">
@@ -1960,7 +2031,118 @@
             'use strict';
 
             // ============================================================
-            //  粒子系统（保持不变）
+            //  localStorage 持久化
+            // ============================================================
+            const STORAGE_KEY = 'goyu_data';
+
+            function saveData() {
+                try {
+                    const data = { textItems: textItems, comicItems: comicItems };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    console.log('💾 数据已保存');
+                } catch (e) {
+                    console.warn('保存数据失败:', e);
+                }
+            }
+
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return false;
+                    const data = JSON.parse(raw);
+                    if (data.textItems) textItems = data.textItems;
+                    if (data.comicItems) comicItems = data.comicItems;
+                    [...textItems, ...comicItems].forEach(item => {
+                        if (!item.annotations) item.annotations = [];
+                        if (!item.images) item.images = [];
+                        if (!item.fullText) item.fullText = '';
+                        if (!item.desc) item.desc = '';
+                        if (!item.title) item.title = '无标题';
+                        if (!item.image) item.image = '';
+                        item.annotations.forEach(a => {
+                            if (a.scale === undefined) a.scale = 1;
+                            if (a.rotation === undefined) a.rotation = 0;
+                        });
+                    });
+                    return true;
+                } catch (e) {
+                    console.warn('加载数据失败:', e);
+                    return false;
+                }
+            }
+
+            // ============================================================
+            //  导出/导入功能
+            // ============================================================
+            function exportData() {
+                try {
+                    if (!textItems.length && !comicItems.length) {
+                        alert('⚠️ 当前没有数据可导出，请先添加内容。');
+                        return;
+                    }
+                    const data = { textItems: textItems, comicItems: comicItems };
+                    const json = JSON.stringify(data, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `goyu_data_${new Date().toISOString().slice(0,10)}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    console.log('📤 数据已导出');
+                    alert('✅ 数据导出成功！');
+                } catch (e) {
+                    console.error('导出失败:', e);
+                    alert('❌ 导出失败，请查看控制台错误信息。');
+                }
+            }
+
+            function importData(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (!data.textItems || !data.comicItems) {
+                            alert('无效的数据文件，请检查格式');
+                            return;
+                        }
+                        if (!confirm('导入将覆盖当前所有数据，确定继续吗？')) return;
+                        textItems = data.textItems;
+                        comicItems = data.comicItems;
+                        [...textItems, ...comicItems].forEach(item => {
+                            if (!item.annotations) item.annotations = [];
+                            if (!item.images) item.images = [];
+                            if (!item.fullText) item.fullText = '';
+                            if (!item.desc) item.desc = '';
+                            if (!item.title) item.title = '无标题';
+                            if (!item.image) item.image = '';
+                            item.annotations.forEach(a => {
+                                if (a.scale === undefined) a.scale = 1;
+                                if (a.rotation === undefined) a.rotation = 0;
+                            });
+                        });
+                        saveData();
+                        renderGrid('text');
+                        renderGrid('comic');
+                        if (currentDetailItem && viewDetail.classList.contains('active')) {
+                            renderDetail(currentDetailItem);
+                        }
+                        alert('✅ 数据导入成功！');
+                        console.log('📥 数据已导入');
+                    } catch (err) {
+                        alert('导入失败: ' + err.message);
+                    }
+                };
+                reader.onerror = function() {
+                    alert('读取文件失败');
+                };
+                reader.readAsText(file);
+            }
+
+            // ============================================================
+            //  粒子系统
             // ============================================================
             const canvas = document.getElementById('particle-canvas');
             const ctx = canvas.getContext('2d');
@@ -2145,13 +2327,11 @@
             });
 
             // ============================================================
-            //  导航与视图切换（保持不变）
+            //  导航
             // ============================================================
             const navBtns = document.querySelectorAll('.nav-btn');
-            const sections = {
-                text: document.getElementById('section-text'),
-                comic: document.getElementById('section-comic')
-            };
+            const sections = { text: document.getElementById('section-text'), comic: document.getElementById(
+                    'section-comic') };
             const viewHome = document.getElementById('view-home');
             const viewDetail = document.getElementById('view-detail');
 
@@ -2175,7 +2355,18 @@
             });
 
             // ============================================================
-            //  详情页核心（保持不变）
+            //  导出/导入按钮事件
+            // ============================================================
+            document.getElementById('export-data-btn').addEventListener('click', exportData);
+            document.getElementById('import-data-input').addEventListener('change', function(e) {
+                if (this.files && this.files.length > 0) {
+                    importData(this.files[0]);
+                    this.value = '';
+                }
+            });
+
+            // ============================================================
+            //  详情页
             // ============================================================
             const detailTitleContainer = document.getElementById('detail-title-container');
             const detailBody = document.getElementById('detail-body');
@@ -2224,7 +2415,7 @@
                         `<input class="detail-title-input" id="detail-title-edit" value="${escapeHtml(item.title || '无标题')}" />`;
                 } else {
                     detailTitleContainer.innerHTML =
-                    `<div class="detail-title">${escapeHtml(item.title || '无标题')}</div>`;
+                        `<div class="detail-title">${escapeHtml(item.title || '无标题')}</div>`;
                 }
                 let html = '';
                 if (isDetailEditing) {
@@ -2296,7 +2487,6 @@
                 `;
             }
 
-            // 图片管理器事件（保持不变）
             document.addEventListener('click', function(e) {
                 const delBtn = e.target.closest('.img-del');
                 if (delBtn) {
@@ -2308,6 +2498,7 @@
                             currentDetailItem.annotations.forEach(a => { if (a.imgIdx > idx) a.imgIdx--; });
                         }
                         renderDetail(currentDetailItem);
+                        saveData();
                     }
                     return;
                 }
@@ -2324,6 +2515,7 @@
                             });
                         }
                         renderDetail(currentDetailItem);
+                        saveData();
                     }
                     return;
                 }
@@ -2341,6 +2533,7 @@
                             });
                         }
                         renderDetail(currentDetailItem);
+                        saveData();
                     }
                     return;
                 }
@@ -2362,6 +2555,7 @@
                             loaded++;
                             if (loaded === files.length) {
                                 renderDetail(currentDetailItem);
+                                saveData();
                                 input.value = '';
                             }
                         };
@@ -2415,6 +2609,7 @@
                     isDetailEditing = false;
                     renderDetail(currentDetailItem);
                     updateDetailActions();
+                    saveData();
                 }
             });
 
@@ -2475,7 +2670,7 @@
             });
 
             // ============================================================
-            //  ★★★ Lightbox（含标注 + 缩放旋转） ★★★
+            //  Lightbox
             // ============================================================
             const lightboxOverlay = document.getElementById('lightbox-overlay');
             const lbImage = document.getElementById('lb-image');
@@ -2495,13 +2690,11 @@
             let annoList = [];
             let currentAnnoId = 0;
 
-            // 打开 Lightbox
             function openLightbox(images, index, annotations) {
                 if (!images || images.length === 0) return;
                 lightboxImages = images.slice();
                 lightboxCurrentIndex = Math.max(0, Math.min(index, images.length - 1));
                 const safeAnno = Array.isArray(annotations) ? annotations : [];
-                // 确保每个标注有 scale 和 rotation 属性
                 annoList = safeAnno.filter(a => a.imgIdx === lightboxCurrentIndex).map(a => {
                     if (a.scale === undefined) a.scale = 1;
                     if (a.rotation === undefined) a.rotation = 0;
@@ -2538,7 +2731,6 @@
                 updateLightboxNav();
             }
 
-            // 渲染标注
             function renderAnnotations() {
                 lbAnnoLayer.innerHTML = '';
                 if (!annoMode) {
@@ -2556,12 +2748,10 @@
                 });
             }
 
-            // ★★★ 创建标注 DOM（增加缩放和旋转手柄） ★★★
             function createAnnoElement(anno, editable) {
                 const div = document.createElement('div');
                 div.className = 'lb-annotation';
                 if (editable) div.classList.add('editing');
-                // 应用位置、缩放、旋转
                 const scale = anno.scale || 1;
                 const rot = anno.rotation || 0;
                 div.style.left = (anno.x * 100) + '%';
@@ -2569,104 +2759,60 @@
                 div.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`;
                 div.dataset.annoId = anno.id;
 
-                // 点
                 const dot = document.createElement('div');
                 dot.className = 'anno-dot';
                 dot.style.background = anno.color || '#FF6B6B';
                 div.appendChild(dot);
 
-                // 标签
                 const label = document.createElement('div');
                 label.className = 'anno-label show';
                 label.textContent = anno.text || '标注';
                 div.appendChild(label);
 
                 if (editable) {
-                    // 编辑操作按钮
                     const actions = document.createElement('div');
                     actions.className = 'anno-edit-actions';
                     const editBtn = document.createElement('button');
                     editBtn.className = 'anno-edit-btn';
                     editBtn.textContent = '✎';
-                    editBtn.title = '编辑文字';
                     const delBtn = document.createElement('button');
                     delBtn.className = 'anno-del-btn';
                     delBtn.textContent = '✕';
-                    delBtn.title = '删除标注';
                     actions.appendChild(editBtn);
                     actions.appendChild(delBtn);
                     div.appendChild(actions);
 
-                    // ★★★ 缩放手柄 ★★★
                     const scaleHandle = document.createElement('div');
                     scaleHandle.className = 'anno-handle anno-scale';
-                    scaleHandle.title = '拖拽缩放';
                     div.appendChild(scaleHandle);
 
-                    // ★★★ 旋转手柄 ★★★
                     const rotateHandle = document.createElement('div');
                     rotateHandle.className = 'anno-handle anno-rotate';
-                    rotateHandle.title = '拖拽旋转';
                     div.appendChild(rotateHandle);
 
-                    // ---------- 拖拽移动（原有逻辑） ----------
                     div.addEventListener('mousedown', function(e) {
                         if (e.target.closest('.anno-handle') || e.target.closest('.anno-edit-actions')) return;
                         e.stopPropagation();
                         startDragAnno(e, div, anno);
                     });
-                    div.addEventListener('touchstart', function(e) {
-                        if (e.target.closest('.anno-handle') || e.target.closest('.anno-edit-actions')) return;
-                        e.stopPropagation();
-                        const touch = e.touches[0];
-                        const me = new MouseEvent('mousedown', {
-                            clientX: touch.clientX,
-                            clientY: touch.clientY
-                        });
-                        startDragAnno(me, div, anno);
-                    }, { passive: true });
 
-                    // ---------- 缩放交互 ----------
                     scaleHandle.addEventListener('mousedown', function(e) {
                         e.stopPropagation();
                         e.preventDefault();
                         startScaleRotate(e, anno, div, 'scale');
                     });
-                    scaleHandle.addEventListener('touchstart', function(e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        const touch = e.touches[0];
-                        const me = new MouseEvent('mousedown', {
-                            clientX: touch.clientX,
-                            clientY: touch.clientY
-                        });
-                        startScaleRotate(me, anno, div, 'scale');
-                    }, { passive: false });
 
-                    // ---------- 旋转交互 ----------
                     rotateHandle.addEventListener('mousedown', function(e) {
                         e.stopPropagation();
                         e.preventDefault();
                         startScaleRotate(e, anno, div, 'rotate');
                     });
-                    rotateHandle.addEventListener('touchstart', function(e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        const touch = e.touches[0];
-                        const me = new MouseEvent('mousedown', {
-                            clientX: touch.clientX,
-                            clientY: touch.clientY
-                        });
-                        startScaleRotate(me, anno, div, 'rotate');
-                    }, { passive: false });
 
-                    // 编辑文字
                     editBtn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         openAnnoEditor(anno);
                     });
 
-                    // 删除
                     delBtn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         if (confirm('删除此标注？')) {
@@ -2682,7 +2828,6 @@
                 return div;
             }
 
-            // ---------- 拖拽移动（原） ----------
             function startDragAnno(e, el, anno) {
                 if (!annoMode) return;
                 const rect = lbImgWrapper.getBoundingClientRect();
@@ -2716,12 +2861,10 @@
                 document.addEventListener('touchend', onEnd, { passive: true });
             }
 
-            // ---------- 缩放 / 旋转（新增） ----------
             function startScaleRotate(e, anno, el, type) {
                 if (!annoMode) return;
                 e.preventDefault();
                 const rect = lbImgWrapper.getBoundingClientRect();
-                // 计算当前标注中心在图片中的像素位置
                 const centerX = anno.x * rect.width + rect.left;
                 const centerY = anno.y * rect.height + rect.top;
 
@@ -2729,15 +2872,11 @@
                 let startRot = anno.rotation || 0;
                 let startDist = 0;
                 let startAngle = 0;
-                let initialMouseX = e.clientX;
-                let initialMouseY = e.clientY;
                 if (type === 'scale') {
-                    // 计算初始距离（像素）
                     const dx = e.clientX - centerX;
                     const dy = e.clientY - centerY;
                     startDist = Math.sqrt(dx * dx + dy * dy);
                 } else {
-                    // 计算初始角度（弧度）
                     const dx = e.clientX - centerX;
                     const dy = e.clientY - centerY;
                     startAngle = Math.atan2(dy, dx);
@@ -2761,7 +2900,6 @@
                         let angle = Math.atan2(dy, dx);
                         let delta = angle - startAngle;
                         let newRot = startRot + delta * (180 / Math.PI);
-                        // 限制旋转范围 -180~180
                         if (newRot > 180) newRot -= 360;
                         if (newRot < -180) newRot += 360;
                         anno.rotation = newRot;
@@ -2782,7 +2920,6 @@
                 document.addEventListener('touchend', onEnd, { passive: true });
             }
 
-            // 更新单个标注的 transform
             function updateAnnoTransform(el, anno) {
                 const scale = anno.scale || 1;
                 const rot = anno.rotation || 0;
@@ -2791,18 +2928,17 @@
                 el.style.top = (anno.y * 100) + '%';
             }
 
-            // ★★★ 保存标注 ★★★
             function saveAnnotations() {
                 if (!currentDetailItem) return;
                 if (!currentDetailItem.annotations) currentDetailItem.annotations = [];
                 currentDetailItem.annotations = currentDetailItem.annotations.filter(a => a.imgIdx !==
-                lightboxCurrentIndex);
+                    lightboxCurrentIndex);
                 annoList.forEach(a => {
                     currentDetailItem.annotations.push({ ...a, imgIdx: lightboxCurrentIndex });
                 });
+                saveData();
             }
 
-            // ★★★ 打开标注编辑模态框 ★★★
             function openAnnoEditor(anno) {
                 const overlay = document.getElementById('anno-input-overlay');
                 const textarea = document.getElementById('anno-input-text');
@@ -2819,7 +2955,6 @@
                         saveAnnotations();
                         renderAnnotations();
                     } else {
-                        // 如果文字为空，删除该标注
                         const idx = annoList.findIndex(a => a.id === anno.id);
                         if (idx > -1) {
                             annoList.splice(idx, 1);
@@ -2856,7 +2991,6 @@
                 setTimeout(() => textarea.focus(), 100);
             }
 
-            // 导航
             function updateLightboxNav() {
                 if (lightboxImages.length <= 1) {
                     lbPrev.classList.add('hidden');
@@ -2895,7 +3029,6 @@
                 }
             }
 
-            // 点击图片添加标注
             function handleImageClick(e) {
                 if (!annoMode) return;
                 if (!currentDetailItem) {
@@ -2925,7 +3058,6 @@
                 openAnnoEditor(newAnno);
             }
 
-            // 绑定点击事件（图片区域）
             lbImgWrapper.addEventListener('click', function(e) {
                 if (e.target.closest('.lb-annotation')) return;
                 if (!annoMode) return;
@@ -2936,7 +3068,6 @@
                 handleImageClick(e);
             });
 
-            // 切换标注模式
             lbAnnoToggle.addEventListener('click', function() {
                 annoMode = !annoMode;
                 this.textContent = annoMode ? '✏ 标注模式' : '👁 查看模式';
@@ -2946,7 +3077,6 @@
                 lbAnnoLayer.classList.toggle('lb-anno-editable', annoMode);
             });
 
-            // 关闭 Lightbox
             function closeLightbox() {
                 saveAnnotations();
                 lightboxOverlay.classList.remove('active');
@@ -2960,7 +3090,6 @@
                 }, 300);
             }
 
-            // Lightbox 事件
             lbClose.addEventListener('click', closeLightbox);
             lightboxOverlay.addEventListener('click', function(e) {
                 if (e.target === lightboxOverlay || e.target === lbContainer) {
@@ -2994,7 +3123,7 @@
             });
 
             // ============================================================
-            //  数据管理（保持不变）
+            //  数据管理
             // ============================================================
             let textItems = [];
             let comicItems = [];
@@ -3028,6 +3157,10 @@
                     html += `
                         <div class="card ${editing ? 'editing' : ''}" data-type="${type}" data-index="${index}">
                             <img class="card-cover" src="${coverSrc}" alt="封面" onerror="this.style.display='none'" />
+                            <div class="card-actions">
+                                <button class="card-delete-btn" data-type="${type}" data-index="${index}" title="删除卡片">🗑️</button>
+                                <button class="card-edit-toggle" data-type="${type}" data-index="${index}" data-action="edit-toggle" title="编辑">✎</button>
+                            </div>
                             <div class="card-view">
                                 <div class="card-title">${escapeHtml(item.title) || '无标题'}</div>
                                 <div class="card-desc">${escapeHtml(item.desc) || '暂无介绍'}</div>
@@ -3048,7 +3181,6 @@
                                     <button class="card-edit-btn-sm cancel-sm" data-type="${type}" data-index="${index}" data-action="cancel-card">取消</button>
                                 </div>
                             </div>
-                            <button class="card-edit-toggle" data-type="${type}" data-index="${index}" data-action="edit-toggle" title="编辑标题、描述和封面">✎</button>
                         </div>
                     `;
                 });
@@ -3056,7 +3188,7 @@
             }
 
             // ============================================================
-            //  裁剪功能（保持不变）
+            //  裁剪功能
             // ============================================================
             const cropOverlay = document.getElementById('crop-overlay');
             const cropImage = document.getElementById('crop-image');
@@ -3317,9 +3449,33 @@
             cropOverlay.addEventListener('click', function(e) { if (e.target === cropOverlay) closeCropModal(); });
 
             // ============================================================
-            //  卡片事件（保持不变）
+            //  卡片事件
             // ============================================================
             document.addEventListener('click', function(e) {
+                const delBtn = e.target.closest('.card-delete-btn');
+                if (delBtn) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const type = delBtn.dataset.type;
+                    const index = parseInt(delBtn.dataset.index);
+                    if (!isNaN(index) && type) {
+                        const items = type === 'text' ? textItems : comicItems;
+                        const item = items[index];
+                        if (item) {
+                            const title = item.title || '无标题';
+                            if (confirm(`确定要删除「${title}」吗？此操作不可撤销！`)) {
+                                items.splice(index, 1);
+                                renderGrid(type);
+                                saveData();
+                                if (currentDetailItem === item && viewDetail.classList.contains('active')) {
+                                    showHomeView();
+                                }
+                            }
+                        }
+                    }
+                    return;
+                }
+
                 const toggle = e.target.closest('.card-edit-toggle');
                 if (toggle) {
                     e.stopPropagation();
@@ -3360,6 +3516,7 @@
                             if (currentDetailItem === items[index] && viewDetail.classList.contains('active')) {
                                 renderDetail(currentDetailItem);
                             }
+                            saveData();
                         }
                     }
                     return;
@@ -3433,9 +3590,12 @@
                 const items = type === 'text' ? textItems : comicItems;
                 items.push({ title, desc, image, fullText, images, annotations: [] });
                 renderGrid(type);
+                saveData();
             }
 
-            // ===== 主模态框 =====
+            // ============================================================
+            //  主模态框
+            // ============================================================
             const overlay = document.getElementById('modal-overlay');
             const closeBtn = document.getElementById('modal-close');
             const cancelBtnModal = document.getElementById('modal-cancel');
@@ -3561,10 +3721,13 @@
                 fileInput.value = '';
             });
 
-            // ===== 初始化 =====
+            // ============================================================
+            //  初始化
+            // ============================================================
+            loadData();
             renderGrid('text');
             renderGrid('comic');
-            console.log('✅ 完整功能已加载：批注支持缩放和旋转（拖拽手柄）');
+            console.log('✅ 完整功能已加载，支持导出/导入跨设备同步');
         })();
     </script>
 </body>
