@@ -166,7 +166,7 @@
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             border-radius: 48px;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px rgba(135, 206, 235, 0.10);
         }
@@ -189,6 +189,86 @@
             color: #3d5a73;
             opacity: 0.85;
             letter-spacing: 2px;
+        }
+
+        /* ===== ★★★ 搜索栏 ★★★ ===== */
+        .search-bar {
+            margin-bottom: 28px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 8px 20px 8px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .search-bar:focus-within {
+            border-color: rgba(135, 206, 235, 0.4);
+            box-shadow: 0 4px 28px rgba(135, 206, 235, 0.08);
+        }
+        .search-icon {
+            font-size: 1.1rem;
+            color: #5a7a8a;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 120px;
+            border: none;
+            background: transparent;
+            font-family: '楷体', 'KaiTi', serif;
+            font-size: 1.05rem;
+            color: #1e3b4a;
+            outline: none;
+            padding: 8px 0;
+        }
+        .search-input::placeholder {
+            color: #8a9aa8;
+            opacity: 0.7;
+        }
+        .search-clear {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(200, 200, 200, 0.3);
+            color: #5a7a8a;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-family: '楷体', serif;
+            line-height: 1;
+        }
+        .search-clear:hover {
+            transform: scale(1.15);
+            background: rgba(200, 200, 200, 0.5);
+        }
+        .search-clear.visible {
+            display: flex;
+        }
+        .search-info {
+            font-size: 0.85rem;
+            color: #5a7a8a;
+            padding: 4px 0;
+            min-width: 100px;
+            text-align: right;
+            flex-shrink: 0;
+            opacity: 0.8;
+            font-family: '楷体', 'KaiTi', serif;
+        }
+        .search-info.highlight {
+            color: #87CEEB;
+            opacity: 1;
         }
 
         .view {
@@ -219,7 +299,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 32px;
-            margin: 30px 0 40px;
+            margin: 24px 0 30px;
         }
         .card {
             background: rgba(255, 255, 255, 0.25);
@@ -229,7 +309,7 @@
             padding: 20px 20px 24px;
             box-shadow: 0 8px 28px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.25s ease, box-shadow 0.3s, border-color 0.3s;
+            transition: transform 0.25s ease, box-shadow 0.3s, border-color 0.3s, opacity 0.3s;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -247,6 +327,11 @@
             transform: translateY(-4px);
             cursor: default;
         }
+        /* ★★★ 搜索隐藏 ★★★ */
+        .card.search-hidden {
+            display: none !important;
+        }
+
         .card-cover {
             width: 100%;
             aspect-ratio: 4 / 3;
@@ -454,7 +539,8 @@
             display: none;
         }
 
-        .empty-hint {
+        .empty-hint,
+        .search-empty-hint {
             grid-column: 1 / -1;
             padding: 60px 20px;
             text-align: center;
@@ -464,6 +550,12 @@
             border-radius: 48px;
             backdrop-filter: blur(4px);
             border: 1px dashed rgba(135, 206, 235, 0.3);
+        }
+        .search-empty-hint {
+            display: none;
+        }
+        .search-empty-hint.visible {
+            display: block;
         }
 
         .detail-back-wrap {
@@ -1738,6 +1830,19 @@
                 font-size: 1.8rem;
                 white-space: nowrap;
             }
+            .search-bar {
+                padding: 6px 14px 6px 18px;
+                border-radius: 32px;
+                gap: 8px;
+            }
+            .search-input {
+                font-size: 0.95rem;
+                min-width: 80px;
+            }
+            .search-info {
+                font-size: 0.75rem;
+                min-width: 60px;
+            }
             .modal-box {
                 padding: 24px 20px;
             }
@@ -1908,18 +2013,29 @@
         </header>
 
         <div id="view-home" class="view active">
+            <!-- ★★★ 搜索栏 ★★★ -->
+            <div class="search-bar" id="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="search-input" placeholder="搜索标题或描述..." autocomplete="off" />
+                <button class="search-clear" id="search-clear">✕</button>
+                <span class="search-info" id="search-info"></span>
+            </div>
+
             <div id="section-text" class="section active">
                 <div class="card-grid" id="text-grid">
                     <div class="empty-hint">✨ 还没有文本内容，上传一篇吧</div>
                 </div>
+                <div class="search-empty-hint" id="text-search-empty">🔍 没有找到匹配的卡片</div>
                 <div class="add-btn-wrap">
                     <button class="modal-btn primary" id="open-text-modal" style="font-size:1.2rem; padding:12px 40px;">＋ 添加文本</button>
                 </div>
             </div>
+
             <div id="section-comic" class="section">
                 <div class="card-grid" id="comic-grid">
                     <div class="empty-hint">🎨 还没有漫本作品，上传一则吧</div>
                 </div>
+                <div class="search-empty-hint" id="comic-search-empty">🔍 没有找到匹配的卡片</div>
                 <div class="add-btn-wrap">
                     <button class="modal-btn primary" id="open-comic-modal" style="font-size:1.2rem; padding:12px 40px;">＋ 添加漫本</button>
                 </div>
@@ -2129,6 +2245,8 @@
                         if (currentDetailItem && viewDetail.classList.contains('active')) {
                             renderDetail(currentDetailItem);
                         }
+                        // 清空搜索
+                        clearSearch();
                         alert('✅ 数据导入成功！');
                         console.log('📥 数据已导入');
                     } catch (err) {
@@ -2351,6 +2469,8 @@
                     Object.keys(sections).forEach(key => {
                         sections[key].classList.toggle('active', key === tab);
                     });
+                    // ★★★ 切换板块时清空搜索 ★★★
+                    clearSearch();
                 });
             });
 
@@ -2362,6 +2482,107 @@
                 if (this.files && this.files.length > 0) {
                     importData(this.files[0]);
                     this.value = '';
+                }
+            });
+
+            // ============================================================
+            //  ★★★ 搜索功能 ★★★
+            // ============================================================
+            const searchInput = document.getElementById('search-input');
+            const searchClear = document.getElementById('search-clear');
+            const searchInfo = document.getElementById('search-info');
+            const textSearchEmpty = document.getElementById('text-search-empty');
+            const comicSearchEmpty = document.getElementById('comic-search-empty');
+
+            let currentSearchKeyword = '';
+
+            function performSearch() {
+                const keyword = searchInput.value.trim();
+                currentSearchKeyword = keyword.toLowerCase();
+                const activeSection = document.querySelector('.section.active');
+                if (!activeSection) return;
+
+                const grid = activeSection.querySelector('.card-grid');
+                if (!grid) return;
+
+                const cards = grid.querySelectorAll('.card');
+                const isEmpty = activeSection.id === 'section-text' ? textSearchEmpty : comicSearchEmpty;
+                let matchCount = 0;
+
+                if (!keyword) {
+                    // 无关键词，显示所有卡片
+                    cards.forEach(card => {
+                        card.classList.remove('search-hidden');
+                        matchCount++;
+                    });
+                    if (isEmpty) isEmpty.classList.remove('visible');
+                    searchInfo.textContent = '';
+                    searchInfo.classList.remove('highlight');
+                    searchClear.classList.remove('visible');
+                    return;
+                }
+
+                // 有关键词，过滤
+                const lowerKeyword = keyword.toLowerCase();
+                cards.forEach(card => {
+                    const title = (card.dataset.title || '').toLowerCase();
+                    const desc = (card.dataset.desc || '').toLowerCase();
+                    const match = title.includes(lowerKeyword) || desc.includes(lowerKeyword);
+                    if (match) {
+                        card.classList.remove('search-hidden');
+                        matchCount++;
+                    } else {
+                        card.classList.add('search-hidden');
+                    }
+                });
+
+                // 更新匹配数量
+                const total = cards.length;
+                if (matchCount > 0) {
+                    searchInfo.textContent = `找到 ${matchCount} 个结果 / 共 ${total} 张`;
+                    searchInfo.classList.add('highlight');
+                    if (isEmpty) isEmpty.classList.remove('visible');
+                } else {
+                    searchInfo.textContent = `无匹配结果`;
+                    searchInfo.classList.remove('highlight');
+                    if (isEmpty) isEmpty.classList.add('visible');
+                }
+                searchClear.classList.add('visible');
+            }
+
+            function clearSearch() {
+                searchInput.value = '';
+                currentSearchKeyword = '';
+                searchInfo.textContent = '';
+                searchInfo.classList.remove('highlight');
+                searchClear.classList.remove('visible');
+                // 显示所有卡片
+                document.querySelectorAll('.card').forEach(card => {
+                    card.classList.remove('search-hidden');
+                });
+                document.querySelectorAll('.search-empty-hint').forEach(el => {
+                    el.classList.remove('visible');
+                });
+            }
+
+            // 搜索输入事件（防抖）
+            let searchTimer = null;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(performSearch, 200);
+            });
+
+            // 清空按钮
+            searchClear.addEventListener('click', function() {
+                clearSearch();
+                searchInput.focus();
+            });
+
+            // 按 ESC 清空搜索
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    clearSearch();
+                    searchInput.blur();
                 }
             });
 
@@ -3140,6 +3361,9 @@
 
             const tempCoverMap = new Map();
 
+            // ============================================================
+            //  ★★★ renderGrid（添加 data-title 和 data-desc） ★★★
+            // ============================================================
             function renderGrid(type) {
                 const gridId = type === 'text' ? 'text-grid' : 'comic-grid';
                 const grid = document.getElementById(gridId);
@@ -3147,6 +3371,9 @@
                 if (items.length === 0) {
                     grid.innerHTML =
                         `<div class="empty-hint">${type === 'text' ? '✨' : '🎨'} 还没有内容，上传一条吧</div>`;
+                    // 隐藏搜索空状态
+                    const emptyEl = type === 'text' ? textSearchEmpty : comicSearchEmpty;
+                    if (emptyEl) emptyEl.classList.remove('visible');
                     return;
                 }
                 let html = '';
@@ -3154,16 +3381,19 @@
                     const key = getEditKey(type, index);
                     const editing = isCardEditing(type, index);
                     const coverSrc = tempCoverMap.has(key) ? tempCoverMap.get(key) : (item.image || '');
+                    const titleText = item.title || '无标题';
+                    const descText = item.desc || '';
                     html += `
-                        <div class="card ${editing ? 'editing' : ''}" data-type="${type}" data-index="${index}">
+                        <div class="card ${editing ? 'editing' : ''}" data-type="${type}" data-index="${index}" 
+                             data-title="${escapeHtml(titleText)}" data-desc="${escapeHtml(descText)}">
                             <img class="card-cover" src="${coverSrc}" alt="封面" onerror="this.style.display='none'" />
                             <div class="card-actions">
                                 <button class="card-delete-btn" data-type="${type}" data-index="${index}" title="删除卡片">🗑️</button>
                                 <button class="card-edit-toggle" data-type="${type}" data-index="${index}" data-action="edit-toggle" title="编辑">✎</button>
                             </div>
                             <div class="card-view">
-                                <div class="card-title">${escapeHtml(item.title) || '无标题'}</div>
-                                <div class="card-desc">${escapeHtml(item.desc) || '暂无介绍'}</div>
+                                <div class="card-title">${escapeHtml(titleText)}</div>
+                                <div class="card-desc">${escapeHtml(descText)}</div>
                             </div>
                             <div class="card-edit">
                                 <input class="card-title-input" id="card-title-${type}-${index}" value="${escapeHtml(item.title || '无标题')}" placeholder="标题" />
@@ -3185,6 +3415,10 @@
                     `;
                 });
                 grid.innerHTML = html;
+                // 如果有搜索关键词，重新应用搜索
+                if (currentSearchKeyword) {
+                    performSearch();
+                }
             }
 
             // ============================================================
@@ -3727,7 +3961,7 @@
             loadData();
             renderGrid('text');
             renderGrid('comic');
-            console.log('✅ 完整功能已加载，支持导出/导入跨设备同步');
+            console.log('✅ 完整功能已加载，支持搜索、导出/导入跨设备同步');
         })();
     </script>
 </body>
